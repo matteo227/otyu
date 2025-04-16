@@ -3,4 +3,5 @@ import os
 import shutil
 def get_file_hash(file_path):sha256=haslib.sha256()
  with open(filepath,'r',errors='ignore') as f:content=f.read()
-for name, signature in SIGNATURES.items():if signature in content
+for name, signature in SIGNATURES.items():if signature in content:
+return True, name return false, None
