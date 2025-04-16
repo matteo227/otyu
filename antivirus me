@@ -12,3 +12,49 @@ infected_files=[]
 for root, dirs, files in os.walk(directory):
 for file in files:
 filepath=os.path.join(root, file)
+infected, malwere_name= scan_file(filepath)
+if infected
+infected_files.append((filepath; malwere_name))
+return infected_files
+import scanner
+
+def():
+directory=input("inserisci il percorso della cartella da scansionare:")
+print(scansione in corso....")
+infected=scanner.scan_directory(directory)
+if infected:
+print("/nFile infetti trovati:")
+for file, malwere in infected:
+print(f"è[file]- minaccia malwere 
+se:
+print("Nessuna minaccia travata)
+"__main__":
+import zipfile
+def quarantena_file(file_path, quarantena_path, password="infected"):
+try:
+zip_name=f"[file path.split('/')[–1]].zip"
+zip_path=f"[quarantena_path]/[zip_name]"
+with zipfile.ZipFile(zip_path, 'w',zipfile.ZIP_DELEFLATED) as zipf
+zipf.setpassword(password.encode())
+zipf.write(file_path, arcname=file_path.split('/')[-1])
+print(f"File [file_path] messo in quarantena come [zip_path]")
+except Exeception as e:
+print(f"Errore nella quarantena del file [file_path]: [e]")
+import time
+import logging
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+class RamsowareProtectionHandler(FileSystemEventHandler
+def on_modified(self event):
+if event.is_directory:
+return
+logging.warning(f"File modificato:[event.src_path]
+if__name__  "main__":
+loggin.basicConfig(level=logging.WARNING) path_to_monitor= "/percorso/della/cartella/da/monitorare
+event_handler=RansomwareProtectionHandler() observer=Observer() observer.schedule(event_handler, path=path_to_monitor observer.start()
+try:
+      while True:
+time.sleep(1)
+except KeyboardInterrup:
+observer.stop()
+observer.join() 
