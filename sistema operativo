@@ -1,0 +1,71 @@
+import time
+import treading
+print(" benvenuto nel sistema operativo Door 1!")
+class DoorDefender:
+ def__init__(self):
+  self.virus_database = ["virus.exe", "malwere.dll"]
+  self.scans_in progres = False
+def text_traductor_of_position(self)
+   def scan_file(self, filename):
+   print( f"DoorDefender : scansione di [filename] in corso......")
+   time.spleep(1) 
+   if filename in self.virus_database:
+   print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!
+   return True
+
+   else:
+       print(f" DoorDefender: '[filename] pulito
+       return False
+
+       def start_background_scan(self):
+       self.scans_in progress = True
+       print("DoorDefender: Scansione in background completata.")
+       self.scans_in_progress = False
+
+def is_scanning(self):
+ return self.scans_in_progress
+
+ class LLDE:
+ def __init__(self, door_defender)
+ self.door_defender = door_defender
+
+ def open_url(self, url)
+ print(f"LLDE: Apertuta di'[url]'...")
+ self.current_url = None
+
+ def open_url(self, url):
+ print(f"LLDE: aperturadi' [url]'...")
+ self.current_url = url
+ if "download.ll" in url:
+  if self.door_defender.scan_file("download.ll"):
+print("LLDE: ci sono minacce dentro il download!")
+else:
+print (" download completato con successo")
+
+def check_security(self):
+  if self.current_url:
+  if "malicious in self.current_url
+  print("LLDE: vi preghiamo di uscire da questo sito è potenziealmente dannoso")
+     else:
+   print("sito non sicuro")
+   class DoorOS
+def __init__(self):
+self.door_defender=DoorDefender(1)
+self.llde =LLDE(self.door_defender)
+
+start(self):
+print("DoorOS: Avvio in corso....")
+defender_thread = threading.Thread(target=self.door_defender.start_backgruond_scan)
+defender_thread.start()
+def run_llde(self):
+print("DoorOS:Avvio LLDE...")
+self.llde.open_url("google.com")
+self.llde.check_security(10)      
+self.llde.open_url("downoload.ll")
+self.llde.check_security(10)
+self.llde.open_url("maliciouswebsite.com")
+self.llde.check_security(10)
+door = DoorOS
+door.start(1)
+door.run_llde(3)
+print("DoorOS:Chiusura...")
