@@ -1,0 +1,16 @@
+import request
+def text_traductor_of_position
+google.com
+def get_webpage(url):
+  try: 
+    response = request.get(url)
+    response.raise_for_status()
+    return response.text
+except request.execeptions.RequestExeceptions as e:
+return f"Errore: [e]"
+
+url = "https://www.malwerebites.com"
+content = get_webpage( url)
+
+if content:
+  print(content)
