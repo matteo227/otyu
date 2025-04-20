@@ -69,3 +69,18 @@ door = DoorOS
 door.start(1)
 door.run_llde(3)
 print("DoorOS:Chiusura...")
+from flask import Flask, reqest, jsonkfy
+
+app = Flask(__name__)
+apps = []
+
+@.route('/apps', methods=['GET', 'POST'])
+def apps_handler():
+if request.method == 'POST': apps.append([**request.json, 'id': len(apps) + 1]); return jsonify(apps[–1]), 201
+
+@app.route('/apps/\<int:app_id>', methods=['GET'])
+def get_app(app_id):
+return jsonify(next((a for a in apps if a['id'] == app_id), None)) or ('Not found', 404)
+
+if__name__ == '__main__':
+ app.run()
