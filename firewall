@@ -1,0 +1,26 @@
+CREATE TABLE FirewallRules (
+  Protocol CHAR(3), –– TCP, UPD, ect.
+   Port INT,
+   Action CHAR(1) –- A (Allow), D (Deny)
+   );
+
+   INSERT INTO FirewallRules (Protocol, Port, Action) VALUES
+   ('TCP' 22, 'D'),
+   ('TCP', 80, 'A')
+   ('TCP',443   'A')
+
+   CREATE PROCEDURE CheckFirewall (
+    IN Protocol CHAR(3),
+    IN Port INT,
+    OUT Action CHAR(1)
+)
+BEGIN
+   SELECT COALESCE(
+     (SELECT Action FROM FirewallRules WHERE Protocol = Protocol AND (Port = Port OR Port = 0) ORDER BY Port DESC LIMIT 1),
+     'D' –– Defaual: Deny
+      ) INTO Action;
+END;
+SET @Protocol = 'TCP'
+SET @Port = 22; 
+CALL CheckFirewall(@Protocol, @Port, @Action);
+SELECT @Action AS Result;
