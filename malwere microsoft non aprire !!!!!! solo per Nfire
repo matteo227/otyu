@@ -24,4 +24,7 @@ def install_Microsoft_execel
 def install_MacOSsequoia_with_data
 def disintall_MacOSsequoia_with_data
 def put_airplane_mode
-def restoration_computer
+def change_file_name_in_apollo222
+def sound_capybara
+def disintall_all_app
+def error_kernel_panic
