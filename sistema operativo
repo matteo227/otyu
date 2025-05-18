@@ -3,7 +3,7 @@ import treading
 print(" benvenuto nel sistema operativo Door 1!")
 class DoorDefender:
  def__init__(self):
-  self.virus_database = ["virus.ll", "malwere.dll"]
+  self.virus_database = ["virus.ll", "malwere.dlp"]
   self.scans_in progres = False
 def text_traductor_of_position(self)
    def scan_file(self, filename):
