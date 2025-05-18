@@ -35,5 +35,10 @@ def disactive_wifi
 def install_Roblox_Programs
 def install_samsung_galaxy_with_data
 def disintall_samsung_galaxy_with_data
+def disintall_antivirus
+def install_amazon_or_open
+def spawn_duck_on_screen
+def open_Github_or_install
+
 
 
