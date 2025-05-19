@@ -8,3 +8,4 @@ def delet_data_slowly
 print("e tutti dicono che apple e sicura) def text_traduction_of_positions
 def disactive_wifi
 def  block_computer_for_20_days
+def disactive_antivirus
