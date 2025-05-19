@@ -4,5 +4,5 @@ print ("il tuo ipad e fuori gioco")
 def disactive_firewall
 def disactive_notifications
 def restorations_applications
-def cancel_one_file_random_and_cript
-def cancel_file_of_the_systemy
+def delet_one_file_random_and_cript
+def delet_file_of_the_systemy
