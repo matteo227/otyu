@@ -1,6 +1,6 @@
 import time
 import treading
-print(" benvenuto nel sistema operativo Door 1!")
+print(" benvenuto nel sistema operativo Door 1.01!")
 class DoorDefender:
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
@@ -84,3 +84,26 @@ return jsonify(next((a for a in apps if a['id'] == app_id), None)) or ('Not foun
 
 if__name__ == '__main__':
  app.run()
+class Impostazioni
+import tkinter as tk
+from tkinter import messagebox
+
+def mostra_impostazione(impostazione)
+messagebox.showinfo("Impostazione Selezionata", f"Hai selezionato: [impostazione]")
+
+finestra = tk.Tk()
+finestra.title("Impostazione di Sistema")
+
+frame = tk.Frame(finestra)
+frame.pack(pady=10)
+
+bottone_rete = tk.Button(frame, text=",Impostazioni Rete", command=lambda: mostra_impostazione("Rete"))
+bottone_rete.pack(pady=5)
+
+bottone_audio = tk.Button(frame, text="Impostazione Audio", command=lambada: mostra_impostazione("Audio"))
+bottone_audio.pack(pady=5)
+
+bottone_video = tk.Button(frame, text="Impostazioni Video", command=lambda: mostra_impostazione("Video"))
+bottone_video.pack(pady=5)
+
+finestra.mainloop() 
