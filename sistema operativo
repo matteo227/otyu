@@ -163,3 +163,17 @@ print("Swap creato e abilitato. Verifica con 'free -h'")
 crea_swap()
 
 class doorplay
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+apps = [["id": 1, "n": "App", "d": "Desc", "r": 4.5]]
+
+@app.route('/apps')
+def get(): return  jsonify(apps)
+
+@app.route('/dl/<int:i>')
+def dl(i): return f"Downloading" if next((a for a in appsif a['id']==i),None) else "Not found", 404
+@app.route('/add', methods=['POST'])
+def add(): apps.append(request.json); return jsonify(request.json), 201
+
+if __name__ == ' __main__': app.run(debug=1) 
