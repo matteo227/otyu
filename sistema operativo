@@ -1,7 +1,7 @@
 import time
 import treading
 print(" benvenuto nel sistema operativo Door 1.01 security!")
-class DoorDefender:
+class DoorSecurity:
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
   self.scans_in progres = False
