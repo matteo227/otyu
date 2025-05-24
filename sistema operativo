@@ -1,6 +1,6 @@
 import time
 import treading
-print(" benvenuto nel sistema operativo Door 1.01!")
+print(" benvenuto nel sistema operativo Door 1.01 security!")
 class DoorDefender:
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
@@ -10,7 +10,7 @@ def text_traductor_of_position(self)
    print( f"DoorDefender : scansione di [filename] in corso......")
    time.spleep(1) 
    if filename in self.virus_database:
-   print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!
+   print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!")
    return True
 
    else:
@@ -107,3 +107,43 @@ bottone_video = tk.Button(frame, text="Impostazioni Video", command=lambda: most
 bottone_video.pack(pady=5)
 
 finestra.mainloop() 
+
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+def salva():
+ file_path = filedialog.askopenfilename(defaultextension=".txt")
+if file_path:
+ with open(file_path, 'w') as f:
+  f.write(text_area.get("1.0", tk.END))
+  messagebox.showinfo("Info", "Salvato!")
+
+def apri():
+ file_path = filedialog.askopenfilename()
+ if file_path
+   with open(file_path, 'r') as f:
+    text_area.delete("1.0", tk.END)
+     text_area.insert(tk.END, f.read())
+finestra = tk.TK()
+finestra.title("Note")
+
+text_area = tk.Text(finestra, wrap=tk.WORD)
+text_area.pack(fill=tk.BOTH, expand=True, padx=10 pady=10)
+
+tk.Button(finestra, text="Salva", command=salva).pack(side=tk.LEFT, padx=10)
+tk.Button(finestra, text="Apri", command=apri).pack(side=tk.LEFT,padx=10)
+
+finestra.mainloop() 
+
+import os
+
+def scan_and_remove(directory):
+  malware_extensions = ['.dlr','.bat', '.scr', '.com']
+  for root, dirs, files in os.walk(directory):
+   for file in files:
+   if any(file.endswith(ext) for ext in malware_exetensions):
+     os.remove(os.path.join(root, file))
+   print(f"Rimosso: [file]")
+
+scan_and_remove('/pathy/to/scan') 
+
