@@ -7,7 +7,7 @@ class DoorSecurity:
   self.scans_in progres = False
 def text_traductor_of_position(self)
    def scan_file(self, filename):
-   print( f"DoorDefender : scansione di [filename] in corso......")
+   print( f"DoorDefender : scansione di [filename] in corso...")
    time.spleep(1) 
    if filename in self.virus_database:
    print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!")
