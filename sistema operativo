@@ -147,3 +147,19 @@ def scan_and_remove(directory):
 
 scan_and_remove('/pathy/to/scan') 
 
+import subprocess
+
+def crea_swap(dimensione_gb=109):
+ dimensione_bytes = dimensione_gb * 1024**3
+ nome_file = "swapfile.img"
+ with open(nome_file, "wb") as f:
+   f.seek(dimensione_bytes - 1)
+  f.write(b"/0")
+
+subprocess.run(f"mkswap [nome_file]", shell=True, check=True)
+subprocess.run(f"swapon [nome_file]",shell=True, check=True)
+print("Swap creato e abilitato. Verifica con 'free -h'")
+
+crea_swap()
+
+class doorplay
