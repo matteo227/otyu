@@ -162,7 +162,7 @@ print("Swap creato e abilitato. Verifica con 'free -h'")
 
 crea_swap()
 
-class doorplay
+class Store
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
