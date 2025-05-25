@@ -177,3 +177,15 @@ def dl(i): return f"Downloading" if next((a for a in appsif a['id']==i),None) el
 def add(): apps.append(request.json); return jsonify(request.json), 201
 
 if __name__ == ' __main__': app.run(debug=1) 
+
+import sys, os
+from PyQt5.QtWidget import
+QApplication, QWidget, QPushButton,
+QVBoxLayout, QMessageBox
+
+class ShutdownBtn
+def close_all_windows
+print(" il tuo computer si spegera")
+def disactive_screen
+def if_you_cluc_agnin
+def comparing_logo_of_the_door_laws_file_systemi
