@@ -18,4 +18,6 @@ lo = QVBoxLayout(cw)
 self.url_bar = QLineEdit(cw)
 self.url_bar.returnPressed.conn
 ect(self.load)
- lo.
+ lo.addWidget(self.url_bar)
+
+self.sec
