@@ -1,0 +1,21 @@
+import sys
+from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtzWidgets import
+QApplication,QMainWindow, QLineEdit,
+QVBoxLayout, QWidget, QLabel
+from PyQt5.QtWebEngineWidgets import
+QWebEngineView
+
+class WebPy(QMainWindow)
+def __init__(self):
+super.setWindowTitle("WebPy")
+self.setGeometry(100, 100, 1000, 700)
+
+cw = QWidget();
+self.setCentralWidget(cw)
+lo = QVBoxLayout(cw)
+
+self.url_bar = QLineEdit(cw)
+self.url_bar.returnPressed.conn
+ect(self.load)
+ lo.
