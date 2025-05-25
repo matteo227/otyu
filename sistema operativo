@@ -7,7 +7,7 @@ class DoorSecurity:
   self.scans_in progres = False
 def text_traductor_of_position(self)
    def scan_file(self, filename):
-   print( f"DoorDefender : scansione di [filename] in corso...")
+   print( f"DoorSecurity: scansione di [filename] in corso...")
    time.spleep(1) 
    if filename in self.virus_database:
    print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!")
@@ -19,7 +19,7 @@ def text_traductor_of_position(self)
 
        def start_background_scan(self):
        self.scans_in progress = True
-       print("DoorDefender: Scansione in background completata.")
+       print("DoorScurity: Scansione in background completata.")
        self.scans_in_progress = False
 
 def is_scanning(self):
@@ -27,7 +27,7 @@ def is_scanning(self):
 
  class LLDE:
  def __init__(self, door_defender)
- self.door_defender = door_defender
+ self.door_security = door_security
 
  def open_url(self, url)
  print(f"LLDE: Apertuta di'[url]'...")
@@ -37,8 +37,9 @@ def is_scanning(self):
  print(f"LLDE: aperturadi' [url]'...")
  self.current_url = url
  if "download.ll" in url:
-  if self.door_defender.scan_file("download.ll"):
-print("LLDE: ci sono minacce dentro il download!")
+  if self.door_Security.scan_file("download.ll"):
+print("LLDE:  sono state rilevate minacce dentro il download!")
+def controll_databesa
 else:
 print (" download completato con successo")
 
@@ -50,7 +51,7 @@ def check_security(self):
    print("sito non sicuro")
    class DoorOS
 def __init__(self):
-self.door_defender=DoorDefender(1)
+self.door_Security=DoorSecurity(1)
 self.llde =LLDE(self.door_defender)
 
 start(self):
