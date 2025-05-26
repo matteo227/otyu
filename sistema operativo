@@ -1,6 +1,6 @@
-import time
+aimport time
 import treading
-print(" Benvenuto nel sistema operativo Door 1.01 (beta) security!")
+print(" Benvenuto nel sistema operativo Door 1.01 ( security! (beta)")
 class DoorSecurity:
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
@@ -192,3 +192,19 @@ def if_you_cluc_agnin
 def comparing_logo_of_the_door_laws_file_systemy
 
 
+import subprocess
+import getpass
+
+def crea_utent():
+    username = input("Inserisci il nome utente:")
+    password = getpass.getpass("Inserisci la password:")
+
+try:
+
+subprocess.run(['sudo, 'useradd', '-m', username], check=True)
+subprocess.run(['sudo, 'passwd', '--stdin', username], input=password.encode(),
+print(f"Utente [username] creato con successso.")
+execept subprocess.CalledProcessErorr:
+print("Errore nella creazione dell'utente.")
+
+crea_utente()
