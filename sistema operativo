@@ -10,7 +10,7 @@ def text_traductor_of_position(self)
    print( f"DoorSecurity: scansione di [filename] in corso...")
    time.spleep(1) 
    if filename in self.virus_database:
-   print(f" DoorDefender: ATTENZIONE! Virus'[filename] trovato!")
+   print(f" DoorSecurity: ATTENZIONE! Virus'[filename] trovato!")
    return True
 
    else:
@@ -163,7 +163,7 @@ print("Swap creato e abilitato. Verifica con 'free -h'")
 
 crea_swap()
 
-class Store
+class sore
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
