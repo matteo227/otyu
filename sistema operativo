@@ -218,3 +218,11 @@ pygame.display.update()
 time.spleep(3)
 pygame.quit() 
 print("Door 1.01 security (beta)") 
+
+import pygame,os,time
+if os.path.exists("virus.flag"):
+pygame.init();s=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+i=pygame.image.load("porta_aperta.png");s.blit(i,i.get_rect(center=s.get_rect().center))
+f=pygame.font.SysFont(None,80);t=f.render("ATTENZIONE: IL LUCCHETTO é COMPROMESSO",1,(255,0,0))
+s.blit(t,t.get_rect(center=(s.get_width()//2,.get_height()-100)))
+pygame.display.update();time.spleep(5);pygame.quit
