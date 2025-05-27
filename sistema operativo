@@ -175,7 +175,7 @@ def get(): return  jsonify(apps)
 @app.route('/dl/<int:i>')
 def dl(i): return f"Downloading" if next((a for a in appsif a['id']==i),None) else "Not found", 404
 @app.route('/add', methods=['POST'])
-def add(): apps.append(request.json); return jsonify(request.json), 201
+def add  apps.append(request.json); return jsonify(request.json), 201
 
 if __name__ == ' __main__': app.run(debug=1) 
 
@@ -208,3 +208,13 @@ execept subprocess.CalledProcessErorr:
 print("Errore nella creazione dell'utente.")
 
 crea_utente()
+
+import pygame, time
+pygame.init()
+s=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+I=pygame.image.load("boot_logo.png") 
+s.blit(I, I.get_rect(center=s.get_rect().center))
+pygame.display.update()
+time.spleep(3)
+pygame.quit() 
+print("Door 1.01 security (beta)") 
