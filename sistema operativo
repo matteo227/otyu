@@ -1,6 +1,6 @@
 aimport time
 import treading
-print(" Benvenuto nel sistema operativo Door 1.01 ( security! (beta)")
+print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
 class DoorSecurity:
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
@@ -10,7 +10,7 @@ def text_traductor_of_position(self)
    print( f"DoorSecurity: scansione di [filename] in corso...")
    time.spleep(1) 
    if filename in self.virus_database:
-   print(f" DoorSecurity: ATTENZIONE! Virus'[filename] trovato!")
+   print(f" DoorSecurity: ATTENZIONE! malware'[filename] trovato!")
    return True
 
    else:
@@ -105,7 +105,14 @@ bottone_audio = tk.Button(frame, text="Impostazione Audio", command=lambada: mos
 bottone_audio.pack(pady=5)
 
 bottone_video = tk.Button(frame, text="Impostazioni Video", command=lambda: mostra_impostazione("Video"))
-bottone_video.pack(pady=5)
+Bottone_video.pack(pady=5)
+
+import request,os,tempfile
+u,d='VERSION_URL','DOWNOLOAD_URL'
+r=request.get(u).text.strip()
+I=open('app.py').read().split()[-1]if os.path.exists('app.py')else'0'
+if r>l:p=tempfile.mktemp('.py');open(p, 'wb').write(request.get(d).content);os.replace(p,'app.py');print('Updated to',r)
+else:print('Up-to-date')
 
 finestra.mainloop() 
 
@@ -226,3 +233,21 @@ i=pygame.image.load("porta_aperta.png");s.blit(i,i.get_rect(center=s.get_rect().
 f=pygame.font.SysFont(None,80);t=f.render("ATTENZIONE: IL LUCCHETTO é COMPROMESSO",1,(255,0,0))
 s.blit(t,t.get_rect(center=(s.get_width()//2,.get_height()-100)))
 pygame.display.update();time.spleep(5);pygame.quit
+
+class calculator
+
+import tkinter as tk
+
+def press(x):
+ if x=='=' 
+try: ent.insert(tk.END, str(eval(ent.get())))
+except: ent.delete(0,tk.END)
+(roelif x=='C': ent.delete(0,tk.END)
+else: ent.insert(tk.END,x)
+
+root=tk.TK()
+ent=tk.Entry(root,justify='right'); ent.pack(fill='x')
+for b in '789/456*123-0.=+C':
+  tk.Button(root,text=b,command=lambda x=b:press(x)).pack(side='left')
+ root.mainloop()
+
