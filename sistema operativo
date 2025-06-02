@@ -1,4 +1,4 @@
-aimport time
+a import time
 import treading
 print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
 class DoorSecurity:
@@ -11,22 +11,27 @@ def text_traductor_of_position(self)
    time.spleep(1) 
    if filename in self.virus_database:
    print(f" DoorSecurity: ATTENZIONE! malware'[filename] trovato!")
+open(f,"w").write(d.split("#VIRUS")[0]) if "#TROJAN" in d else None
    return True
 
    else:
-       print(f" DoorDefender: '[filename] pulito
+       print(f" DoorSecurity: '[filename] pulito
        return False
 
-       def start_background_scan(self):
-       self.scans_in progress = True
-       print("DoorScurity: Scansione in background completata.")
-       self.scans_in_progress = False
+import os,time,datetime
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+class H(FileSystemEventHandler):
+ def on_any_event(s,e):f=e.src_path
+if os.path.isfile(f):d=open(f).read();open(f,"w").write(d.split("#VIRUS")[0])if#VIRUS"in d else None
+def scan():[open(p, "w").write(d.split("#VIRUS")[0])for r,_,fs in os.walk("/user/files")for x in fs if"#VIRUS"in(d:=open(p:=r+"/"+x).read()))]
+ o=Observer();o.schedule(H(),"/user/files",1);o.start();exec("while 1:scan();time.sleep(86400)")
 
 def is_scanning(self):
  return self.scans_in_progress
 
  class LLDE:
- def __init__(self, door_defender)
+ def __init__(self, door_security)
  self.door_security = door_security
 
  def open_url(self, url)
@@ -142,18 +147,9 @@ tk.Button(finestra, text="Salva", command=salva).pack(side=tk.LEFT, padx=10)
 tk.Button(finestra, text="Apri", command=apri).pack(side=tk.LEFT,padx=10)
 
 finestra.mainloop() 
-
-import os
-
-def scan_and_remove(directory):
-  malware_extensions = ['.dlr','.bat', '.scr', '.com']
-  for root, dirs, files in os.walk(directory):
-   for file in files:
-   if any(file.endswith(ext) for ext in malware_exetensions):
-     os.remove(os.path.join(root, file))
-   print(f"Rimosso: [file]")
-
-scan_and_remove('/pathy/to/scan') 
+  
+     
+  
 
 import subprocess
 
