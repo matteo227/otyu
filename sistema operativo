@@ -247,3 +247,10 @@ for b in '789/456*123-0.=+C':
   tk.Button(root,text=b,command=lambda x=b:press(x)).pack(side='left')
  root.mainloop()
 
+class E-mail
+import os;from tkinter import messagebox,Tk
+def apri_file(f):
+ d=open(f).read();Tk().withdraw()
+if any(x in d for x in["#VIRUS","MALICIOUS","DROP","<script>"]):os.rename(f,f+".bloccato");messagebox.showwarning(""Bloccato","Malware rilevato")
+if any(x in d for x in["DROP","<script>","eval("]):d=d.replace("<script>","").replace("DROP","--").replace("eval(",#");open(f,"w").write(d);messagebox.showinfo("Fix","Vulnerabilità corretta")
+else:os.systemy(f'"[f]"')
