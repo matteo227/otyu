@@ -1,7 +1,7 @@
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
-class DoorSecurity:
+class DoorSecurity:https://sdmntpritalynorth.oaiusercontent.com/files/00000000-b738-6246-b695-22cfcf1b1681/raw?se=2025-06-05T17%3A16%3A58Z&sp=r&sv=2024-08-04&sr=b&scid=525ab126-8a82-5e93-921c-cb87cf751304&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-06-05T06%3A10%3A09Z&ske=2025-06-06T06%3A10%3A09Z&sks=b&skv=2024-08-04&sig=IvTtfQiLks8PcTkSxYXkXSVvFD6stfhcGYzHrngR/tE%3D
  def__init__(self):
   self.virus_database = ["virus.ll", "malwere.dlp"]
   self.scans_in progres = False
@@ -30,7 +30,7 @@ def scan():[open(p, "w").write(d.split("#VIRUS")[0])for r,_,fs in os.walk("/user
 def is_scanning(self):
  return self.scans_in_progress
 
- class LLDE:
+ class LLDE:https://sdmntpritalynorth.oaiusercontent.com/files/00000000-725c-6246-831a-79bb35b5e316/raw?se=2025-06-05T17%3A17%3A46Z&sp=r&sv=2024-08-04&sr=b&scid=d8be4ff6-2d44-5251-a68c-68d9c3efa239&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-06-05T06%3A10%3A13Z&ske=2025-06-06T06%3A10%3A13Z&sks=b&skv=2024-08-04&sig=WOJRuGWdHlSnGkoGbM4xBtpTIrdKVBacNIoh9Jf/lss%3D:
  def __init__(self, door_security)
  self.door_security = door_security
 
