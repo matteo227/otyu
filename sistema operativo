@@ -122,7 +122,7 @@ else:print('Up-to-date')
 finestra.mainloop() 
 
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox.showinfo("Fix","Vulnerabilià corretta")
 
 def salva():
  file_path = filedialog.askopenfilename(defaultextension=".txt")
