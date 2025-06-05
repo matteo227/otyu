@@ -57,7 +57,7 @@ def check_security(self):
    class DoorOS
 def __init__(self):
 self.door_Security=DoorSecurity(1)
-self.llde =LLDE(self.door_defender)
+self.llde =LLDE(self.door_security)
 
 start(self):
 print("DoorOS: Avvio in corso....")
