@@ -1,8 +1,7 @@
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
-class DoorSecurity:https://sdmntpritalynorth.oaiusercontent.com/files/00000000-b738-6246-b695-22cfcf1b1681/raw?se=2025-06-05T17%3A16%3A58Z&sp=r&sv=2024-08-04&sr=b&scid=525ab126-8a82-5e93-921c-cb87cf751304&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-06-05T06%3A10%3A09Z&ske=2025-06-06T06%3A10%3A09Z&sks=b&skv=2024-08-04&sig=IvTtfQiLks8PcTkSxYXkXSVvFD6stfhcGYzHrngR/tE%3D
- def__init__(self):
+class DoorSecurity:e8cfa056-a093-4afa-8ad3-dd08a85cbed7.png
   self.virus_database = ["virus.ll", "malwere.dlp"]
   self.scans_in progres = False
 def text_traductor_of_position(self)
@@ -30,7 +29,7 @@ def scan():[open(p, "w").write(d.split("#VIRUS")[0])for r,_,fs in os.walk("/user
 def is_scanning(self):
  return self.scans_in_progress
 
- class LLDE:https://sdmntpritalynorth.oaiusercontent.com/files/00000000-725c-6246-831a-79bb35b5e316/raw?se=2025-06-05T17%3A17%3A46Z&sp=r&sv=2024-08-04&sr=b&scid=d8be4ff6-2d44-5251-a68c-68d9c3efa239&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-06-05T06%3A10%3A13Z&ske=2025-06-06T06%3A10%3A13Z&sks=b&skv=2024-08-04&sig=WOJRuGWdHlSnGkoGbM4xBtpTIrdKVBacNIoh9Jf/lss%3D:
+ class LLDE:
  def __init__(self, door_security)
  self.door_security = door_security
 
@@ -90,7 +89,8 @@ return jsonify(next((a for a in apps if a['id'] == app_id), None)) or ('Not foun
 
 if__name__ == '__main__':
  app.run()
-class Impostazioni
+
+class Impostazioni: watermark_preview_image20250606-1-iuquaz-1.png
 import tkinter as tk
 from tkinter import messagebox
 
@@ -120,6 +120,7 @@ if r>l:p=tempfile.mktemp('.py');open(p, 'wb').write(request.get(d).content);os.r
 else:print('Up-to-date')
 
 finestra.mainloop() 
+class note: watermark_preview_image20250607_1-8f7njk.png
 
 import tkinter as tk
 from tkinter import filedialog, messagebox.showinfo("Fix","Vulnerabilià corretta")
@@ -166,7 +167,7 @@ print("Swap creato e abilitato. Verifica con 'free -h'")
 
 crea_swap()
 
-class sore
+class doorstored: watermark_preview_image2025607-1-9geynq.png
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -230,7 +231,7 @@ f=pygame.font.SysFont(None,80);t=f.render("ATTENZIONE: IL LUCCHETTO é COMPROMES
 s.blit(t,t.get_rect(center=(s.get_width()//2,.get_height()-100)))
 pygame.display.update();time.spleep(5);pygame.quit
 
-class calculator
+class calculator: watermark_preview_image20250607-1-4cpcyw.png
 
 import tkinter as tk
 
@@ -247,7 +248,8 @@ for b in '789/456*123-0.=+C':
   tk.Button(root,text=b,command=lambda x=b:press(x)).pack(side='left')
  root.mainloop()
 
-class E-mail
+class E-mail: watermark_previev_image20250606_1_13pywh0.png
+
 import os;from tkinter import messagebox,Tk
 def apri_file(f):
  d=open(f).read();Tk().withdraw()
