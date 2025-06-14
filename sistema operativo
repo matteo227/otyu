@@ -28,7 +28,21 @@ def scan():[open(p, "w").write(d.split("#VIRUS")[0])for r,_,fs in os.walk("/user
 
 def is_scanning(self):
  return self.scans_in_progress
+import request
 
+API_KEYS = "McAfee", "Malwarebytes"
+FILE_PATH = "/percorso/del/file"
+
+def scan_and_remove(file_path, vendor):
+ url = "https://api." + vendor+ ".com//v1/scan"
+headers =  "Autorization": "Bearer " + API_KEYS vendor
+files = "file": open(file_path, "rb")
+
+response = request.post(url, headers=headers, files=files).json() 
+if response.get("status") == "infected":
+  request.post("https://api. + vendor + ".com/v1/remove", heardes=heardes, json="file_path":
+for vendor in API_KEYS:
+ scan_and_remove(FILE_PATH, vendor)
  class LLDE:
  def __init__(self, door_security)
  self.door_security = door_security
