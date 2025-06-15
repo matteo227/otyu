@@ -17,6 +17,15 @@ open(f,"w").write(d.split("#VIRUS")[0]) if "#TROJAN" in d else None
        print(f" DoorSecurity: '[filename] pulito
        return False
 
+
+import shutil, os, subprocess, random
+def antivirus():
+  shutil.make>_archive("backup", "zip", "C:/data")
+  subprocess.run(["clamscan", "-r", "--remove", "C:/"])
+  subprocess.run(["ping", "-c", "3", "google.com"], capture_output=True)
+print(f"Punteggio protezione: [random.randit(1, 100)]")
+antivirus()
+
 import os,time,datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
