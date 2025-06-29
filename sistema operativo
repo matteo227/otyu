@@ -70,6 +70,15 @@ def controll_databesa
 else:
 print (" download completato con successo")
 
+from http.server import HTTPServer, BaseHTTPRequestHandler; import requests, os
+os.makedirs('cache', exist_ok=True)
+class H(BaseHTTPRequestHandler):
+    def do_GET(self): url=self.path[1:];fn=f"cache/{url.replace('://','_').replace('/','_')}.html";data=open(fn,'rb').read() if os.path.exists(fn) else (open(fn,'wb').write(requests.get(url).content) or open(fn,'rb').read());self.send_response(200);self.end_headers();self.wfile.write(data)
+HTTPServer(('0.0.0.0', 8888), H).serve_forever()
+
+
+
+
 def check_security(self):
   if self.current_url:
   if "malicious in self.current_url
