@@ -288,3 +288,12 @@ def apri_file(f):
 if any(x in d for x in["#VIRUS","MALICIOUS","DROP","<script>"]):os.rename(f,f+".bloccato");messagebox.showwarning(""Bloccato","Malware rilevato")
 if any(x in d for x in["DROP","<script>","eval("]):d=d.replace("<script>","").replace("DROP","--").replace("eval(",#");open(f,"w").write(d);messagebox.showinfo("Fix","Vulnerabilità corretta")
 else:os.systemy(f'"[f]"')
+
+import tkinter as tk
+import webbrowser
+import geocoder
+
+def invia_sos()
+posizione = geocoder.ip("me")
+lat, lon = posizione.latlng if posizione.ok
+messaggio = f"Emergenza! posizione: 
