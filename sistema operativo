@@ -304,3 +304,10 @@ webbroewser.open("https://www..emergenza.gov.it"
 # GUI
 root =tk.Tk()
 root.title("sistema di emergenza")
+root.geometry("300x100")
+root.attributes('-topmost', True)
+
+sos_button = tk.button(root, text="SOS", command=invia_sos
+sos_button.place(x=5, y=5 width=50, height=30)
+
+root.mainloop()
