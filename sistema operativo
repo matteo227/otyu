@@ -26,6 +26,20 @@ def antivirus():
 print(f"Punteggio protezione: [random.randit(1, 100)]")
 antivirus()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import os,time,datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
