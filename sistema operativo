@@ -26,19 +26,31 @@ def antivirus():
 print(f"Punteggio protezione: [random.randit(1, 100)]")
 antivirus()
 
+import os, hashlib, time
+MONITOR = "C:/Percorso/Controllo"
+hashes = {}
 
+def calcola_hash(f):
+    try: return hashlib.sha256(open(f,"rb").read()).hexdigest()
+    except: return None
 
+def inizializza():
+    for root,_,files in os.walk(MONITOR):
+        for f in files:
+            p = os.path.join(root,f)
+            hashes[p] = calcola_hash(p)
 
+def monitora():
+    while True:
+        for root,_,files in os.walk(MONITOR):
+            for f in files:
+                p = os.path.join(root,f); h = calcola_hash(p)
+                if p not in hashes: print(f"🆕 Nuovo file: {p}")
+                elif hashes[p]!=h: print(f"⚠️ Modifica sospetta: {p}")
+                hashes[p] = h
+        time.sleep(5)
 
-
-
-
-
-
-
-
-
-
+inizializza(); monitora()
 
 import os,time,datetime
 from watchdog.observers import Observer
