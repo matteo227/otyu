@@ -353,3 +353,4 @@ sos_button = tk.button(root, text="SOS", command=invia_sos
 sos_button.place(x=5, y=5 width=50, height=30)
 
 root.mainloop()
+
