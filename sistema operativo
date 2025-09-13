@@ -13,6 +13,15 @@ def text_traductor_of_position(self)
 open(f,"w").write(d.split("#VIRUS")[0]) if "#TROJAN" in d else None
    return True
 
+import platform
+import re
+import logging
+from pathlib import Path
+from subrocess import run,, PIPE, CalledProcessError 
+
+class BIOSScannerSecure
+ 
+
    else:
        print(f" DoorSecurity: '[filename] pulito
        return False
