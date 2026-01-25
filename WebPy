@@ -1,23 +1,84 @@
-import sys
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtzWidgets import
-QApplication,QMainWindow, QLineEdit,
-QVBoxLayout, QWidget, QLabel
-from PyQt5.QtWebEngineWidgets import
-QWebEngineView
+import imaplib
+import email
+import re
+import requests
+from pymongo import MongoClient
+import openai
 
-class WebPy(QMainWindow)
-def __init__(self):
-super.setWindowTitle("WebPy")
-self.setGeometry(100, 100, 1000, 700)
+IMAP_SERVER = 'imap.tuoemail.com'
+EMAIL_ACCOUNT = 'tuo@email.com'
+EMAIL_PASSWORD = 'password'
 
-cw = QWidget();
-self.setCentralWidget(cw)
-lo = QVBoxLayout(cw)
+OPENAI_API_KEY = 'la_tua_openai_api_key'
+VIRUSTOTAL_API_KEY = 'la_tua_virustotal_api_key'
 
-self.url_bar = QLineEdit(cw)
-self.url_bar.returnPressed.conn
-ect(self.load)
- lo.addWidget(self.url_bar)
+openai.api_key = OPENAI_API_KEY
 
-self.sec
+client = MongoClient("mongodb://localhost:27017/")
+db = client['email_security']
+threats_collection = db['threats']
+
+def analizza_email_ai(testo):
+    prompt = f"Classifica questa email come sicura o sospetta: {testo}"
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-5-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=10
+        )
+        result = response['choices'][0]['message']['content'].strip().lower()
+        if "sospetta" in result:
+            return "sospetto"
+        return "sicuro"
+    except Exception as e:
+        print("Errore AI:", e)
+        return "sospetto"
+
+def controlla_link_virustotal(link):
+    url = "https://www.virustotal.com/api/v3/urls"
+    try:
+        resp = requests.post(url, headers={"x-apikey": VIRUSTOTAL_API_KEY}, data={"url": link})
+        if resp.status_code != 200:
+            return False
+        analysis_id = resp.json()['data']['id']
+        analysis_resp = requests.get(f"{url}/{analysis_id}", headers={"x-apikey": VIRUSTOTAL_API_KEY})
+        stats = analysis_resp.json()['data']['attributes']['last_analysis_stats']
+        if stats['malicious'] > 0 or stats['suspicious'] > 0:
+            threats_collection.update_one({"link": link}, {"$set": {"status": "bloccato"}}, upsert=True)
+            return False
+    except Exception as e:
+        print("Errore VirusTotal:", e)
+        return False
+    return True
+
+mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+mail.login(EMAIL_ACCOUNT, EMAIL_PASSWORD)
+mail.select('inbox')
+
+status, messages = mail.search(None, 'ALL')
+email_ids = messages[0].split()
+
+for e_id in email_ids:
+    _, msg_data = mail.fetch(e_id, '(RFC822)')
+    raw_email = msg_data[0][1]
+    msg = email.message_from_bytes(raw_email)
+    
+    testo_email = ""
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_type() == "text/plain":
+                testo_email += part.get_payload(decode=True).decode()
+    else:
+        testo_email = msg.get_payload(decode=True).decode()
+    
+    stato = analizza_email_ai(testo_email)
+    
+    links = re.findall(r'http[s]?://\S+', testo_email)
+    link_sicuri = []
+    for link in links:
+        if controlla_link_virustotal(link):
+            link_sicuri.append(link)
+        else:
+            print(f"Link bloccato e salvato nel database: {link}")
+    
+    print(f"Email da: {msg['From']}, Stato AI: {stato}, Link sicuri: {link_sicuri}")
