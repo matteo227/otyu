@@ -1,26 +1,164 @@
-CREATE TABLE FirewallRules (
-  Protocol CHAR(3), –– TCP, UPD, ect.
-   Port INT,
-   Action CHAR(1) –- A (Allow), D (Deny)
-   );
+import socket
+import threading
 
-   INSERT INTO FirewallRules (Protocol, Port, Action) VALUES
-   ('TCP' 22, 'D'),
-   ('TCP', 80, 'A')
-   ('TCP',443   'A')
 
-   CREATE PROCEDURE CheckFirewall (
-    IN Protocol CHAR(3),
-    IN Port INT,
-    OUT Action CHAR(1)
-)
-BEGIN
-   SELECT COALESCE(
-     (SELECT Action FROM FirewallRules WHERE Protocol = Protocol AND (Port = Port OR Port = 0) ORDER BY Port DESC LIMIT 1),
-     'D' –– Defaual: Deny
-      ) INTO Action;
-END;
-SET @Protocol = 'TCP'
-SET @Port = 22; 
-CALL CheckFirewall(@Protocol, @Port, @Action);
-SELECT @Action AS Result;
+blocked_ips = {"192.168.1.100"}
+blocked_ports = {22, 23}  # ad esempio blocco SSH e Telnet
+
+def handle_client(client_socket, client_address):
+    ip, port = client_address
+    print(f"Connessione da {ip}:{port}")
+
+    
+    if ip in blocked_ips:
+        print(f"Bloccato IP: {ip}")
+        client_socket.close()
+        return
+    
+    
+    if port in blocked_ports:
+        print(f"Bloccata porta: {port}")
+        client_socket.close()
+        return
+
+    
+    try:
+        data = client_socket.recv(1024)
+        print(f"Ricevuto: {data} da {ip}:{port}")
+        client_socket.send(b"Connessione accettata")
+    except Exception as e:
+        print(f"Errore: {e}")
+    finally:
+        client_socket.close()
+
+
+def start_firewall(host='0.0.0.0', port=9999):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
+    server.listen(5)
+    print(f"Firewall attivo su {host}:{port}")
+
+    while True:
+        client_sock, addr = server.accept()
+        client_thread = threading.Thread(target=handle_client, args=(client_sock, addr))
+        client_thread.start()
+
+if __name__ == "__main__":
+    start_firewall()
+import socket
+import threading
+import time
+from datetime import datetime
+
+# ================== ASSISTENZA ==================
+ASSISTANCE_KEY = "SECURE-OS-ADMIN-KEY"  # SOLO ASSISTENZA
+
+# ================== REGOLE IMMUTABILI ==================
+IMMUTABLE_BLOCKED_PORTS = (22, 23, 445)
+IMMUTABLE_BLOCKED_IP_PREFIX = ("45.", "185.", "92.")
+
+# ================== DATABASE AI ==================
+connection_history = {}
+blocked_connections = []
+
+# ================== AI ENGINE ==================
+def ai_scan(ip, port):
+    now = time.time()
+    history = connection_history.setdefault(ip, [])
+
+    history.append(now)
+    history = [t for t in history if now - t < 60]
+    connection_history[ip] = history
+
+    danger = 0
+    reason = []
+
+    # Frequenza alta
+    if len(history) > 10:
+        danger += 4
+        reason.append("Connessioni ripetute")
+
+    # Porte critiche
+    if port in IMMUTABLE_BLOCKED_PORTS:
+        danger += 5
+        reason.append("Porta critica")
+
+    # IP sospetto
+    if ip.startswith(IMMUTABLE_BLOCKED_IP_PREFIX):
+        danger += 4
+        reason.append("IP Botnet")
+
+    # Classificazione
+    if danger >= 9:
+        threat = "Malware Attivo"
+    elif danger >= 7:
+        threat = "Tentativo Intrusione"
+    elif danger >= 5:
+        threat = "Comportamento Sospetto"
+    else:
+        threat = "Basso Rischio"
+
+    danger = min(danger, 10)
+    return threat, danger, ", ".join(reason)
+
+# ================== LOG BLOCCO ==================
+def log_block(ip, port, threat, danger, reason):
+    blocked_connections.append({
+        "ip": ip,
+        "porta": port,
+        "minaccia": threat,
+        "pericolo": danger,
+        "motivo": reason,
+        "orario": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+    print(f"[AI-BLOCK] {ip}:{port} | {threat} | {danger}/10 | {reason}")
+
+# ================== FIREWALL CORE ==================
+def handle_client(sock, addr):
+    ip, port = addr
+
+    threat, danger, reason = ai_scan(ip, port)
+
+    if port in IMMUTABLE_BLOCKED_PORTS or danger >= 6:
+        log_block(ip, port, threat, danger, reason)
+        sock.close()
+        return
+
+    try:
+        sock.recv(1024)
+        sock.send(b"ACCESS GRANTED")
+    except:
+        pass
+    finally:
+        sock.close()
+
+# ================== FIREWALL ==================
+def start_firewall():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("0.0.0.0", 9999))
+    server.listen(50)
+    print(" SecureOS Firewall attivo (AI ENABLED)")
+
+    while True:
+        client, addr = server.accept()
+        threading.Thread(target=handle_client, args=(client, addr), daemon=True).start()
+
+# ================== AREA SICUREZZA ==================
+def show_security_area():
+    print("\n=== AREA SICUREZZA (SOLO LETTURA) ===")
+    for e in blocked_connections:
+        print(
+            f"{e['orario']} | IP {e['ip']} | Porta {e['porta']} | "
+            f"{e['minaccia']} | Pericolo {e['pericolo']}/10 | {e['motivo']}"
+        )
+
+# ================== ACCESSO ASSISTENZA ==================
+def assistence_modify_rules(key):
+    if key != ASSISTANCE_KEY:
+        raise PermissionError("ACCESSO NEGATO: SOLO ASSISTENZA")
+    print("Accesso assistenza concesso (modalità manutenzione)")
+
+# ================== START ==================
+if __name__ == "__main__":
+    start_firewall()
