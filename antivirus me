@@ -1,60 +1,287 @@
 import hashlib
 import os
-import shutil
-def get_file_hash(file_path):sha256=haslib.sha256()
- with open(filepath,'r',errors='ignore') as f:content=f.read()
-for name, signature in SIGNATURES.items():if signature in content:
-return True, name return false, None
-except Exception as e:
-return False, f"Error reading file: [e]"
-def scan_directory(directory):
-infected_files=[]
-for root, dirs, files in os.walk(directory):
-for file in files:
-filepath=os.path.join(root, file)
-infected, malwere_name= scan_file(filepath)
-if infected
-infected_files.append((filepath; malwere_name))
-return infected_files
-import scanner
+import re
+from datetime import datetime
 
-def():
-directory=input("inserisci il percorso della cartella da scansionare:")
-print(scansione in corso....")
-infected=scanner.scan_directory(directory)
-if infected:
-print("/nFile infetti trovati:")
-for file, malwere in infected:
-print(f"è[file]- minaccia malwere 
-se:
-print("Nessuna minaccia travata)
-"__main__":
-import zipfile
-def quarantena_file(file_path, quarantena_path, password="infected"):
-try:
-zip_name=f"[file path.split('/')[–1]].zip"
-zip_path=f"[quarantena_path]/[zip_name]"
-with zipfile.ZipFile(zip_path, 'w',zipfile.ZIP_DELEFLATED) as zipf
-zipf.setpassword(password.encode())
-zipf.write(file_path, arcname=file_path.split('/')[-1])
-print(f"File [file_path] messo in quarantena come [zip_path]")
-except Exeception as e:
-print(f"Errore nella quarantena del file [file_path]: [e]")
+# ================== REGOLE IMMUTABILI ==================
+DANGEROUS_KEYWORDS = (
+    "eval(", "exec(", "subprocess", "os.system",
+    "socket", "base64", "pickle", "ctypes",
+    "powershell", "cmd.exe"
+)
+
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+QUARANTINE_DIR = "quarantine"
+
+os.makedirs(QUARANTINE_DIR, exist_ok=True)
+
+# ================== AI ENGINE ==================
+def ai_static_analysis(file_path):
+    danger = 0
+    reasons = []
+
+    if os.path.getsize(file_path) > MAX_FILE_SIZE:
+        danger += 2
+        reasons.append("File molto grande")
+
+    with open(file_path, "rb") as f:
+        content = f.read()
+
+    text = content.decode(errors="ignore")
+
+    # keyword sospette
+    for k in DANGEROUS_KEYWORDS:
+        if k in text:
+            danger += 2
+            reasons.append(f"Keyword sospetta: {k}")
+
+    # offuscamento
+    if re.search(r"[A-Za-z0-9+/]{100,}={0,2}", text):
+        danger += 3
+        reasons.append("Possibile offuscamento Base64")
+
+    # persistenza
+    if "startup" in text or "autorun" in text:
+        danger += 3
+        reasons.append("Tentativo persistenza")
+
+    # classificazione AI
+    if danger >= 9:
+        threat = "Malware Critico"
+    elif danger >= 6:
+        threat = "App Maligna"
+    elif danger >= 4:
+        threat = "App Sospetta"
+    else:
+        threat = "Pulita"
+
+    return threat, min(danger, 10), reasons
+
+# ================== HASH ==================
+def calculate_hash(file_path):
+    h = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+# ================== QUARANTENA ==================
+def quarantine(file_path):
+    name = os.path.basename(file_path)
+    target = os.path.join(QUARANTINE_DIR, name)
+    os.rename(file_path, target)
+    return target
+
+# ================== SCANSIONE APP ==================
+def scan_app(file_path):
+    print(f"\n🔍 Scansione app: {file_path}")
+
+    hash_value = calculate_hash(file_path)
+    threat, danger, reasons = ai_static_analysis(file_path)
+
+    print(f"Hash: {hash_value}")
+    print(f"Minaccia: {threat}")
+    print(f"Pericolosità: {danger}/10")
+
+    for r in reasons:
+        print(f" - {r}")
+
+    # decisione finale
+    if danger >= 6:
+        q = quarantine(file_path)
+        print(f" BLOCCATA e messa in quarantena: {q}")
+        return False
+
+    
+    return True
+
+# ================== LAUNCHER OS ==================
+def open_app(file_path):
+    if scan_app(file_path):
+        os.system(f"python {file_path}")
+
+# ================== TEST ==================
+if __name__ == "__main__":
+    open_app("test_app.py")
+def scan_app(file_path):
+    print(f"\n🔍 Scansione: {file_path}")
+
+    hash_value = calculate_hash(file_path)
+    threat, danger, reasons = ai_static_analysis(file_path)
+
+    print(f"Hash: {hash_value}")
+    print(f"Risultato: {threat}")
+
+    
+    if threat != "Pulita":
+        print(f"Pericolosità: {danger}/10")
+        for r in reasons:
+            print(f" - {r}")
+
+    # decisione finale
+    if danger >= 6:
+        q = quarantine(file_path)
+        print(f"BLOCCATA e messa in quarantena: {q}")
+        return False
+
+    if threat != "Pulita":
+        print(" File consentito ma sotto monitoraggio")
+
+    else:
+        print(" File sicuro")
+
+    return True
+import os
+import sys
+
+# ================== FILE CRITICI ==================
+BOOT_FILES = [
+    "kernel.py",
+    "launcher.py",
+    "firewall.py",
+    "antivirus.py"
+]
+
+STARTUP_DIR = "startup"
+
+# ================== AVVIO PROTETTO ==================
+def secure_boot():
+    print(" Avvio protetto in corso...")
+
+    # 1️ Scansione file di boot
+    for f in BOOT_FILES:
+        if os.path.exists(f):
+            if not scan_app(f):
+                print(" AVVIO BLOCCATO: file di sistema compromesso")
+                sys.exit(1)
+
+    # 2️ Scansione servizi di startup
+    if os.path.isdir(STARTUP_DIR):
+        for file in os.listdir(STARTUP_DIR):
+            path = os.path.join(STARTUP_DIR, file)
+            if os.path.isfile(path):
+                if not scan_app(path):
+                    print(" AVVIO BLOCCATO: startup malevolo")
+                    sys.exit(1)
+
+    print("Avvio protetto completato. Sistema sicuro.")
+
+# ================== ENTRY POINT OS ==================
+if __name__ == "__main__":
+    secure_boot()
+    print(" Avvio sistema operativo...")
+import os
+import sys
 import time
-import logging
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-class RamsowareProtectionHandler(FileSystemEventHandler
-def on_modified(self event):
-if event.is_directory:
-return
-logging.warning(f"File modificato:[event.src_path]
-if__name__  "main__":
-loggin.basicConfig(level=logging.WARNING) path_to_monitor= "/percorso/della/cartella/da/monitorare
-event_handler=RansomwareProtectionHandler() observer=Observer() observer.schedule(event_handler, path=path_to_monitor observer.start()
-try:
-      while True:
-time.sleep(1)
-except KeyboardInterrup:
-observer.stop()
-observer.join() 
+
+# ================== RETE ==================
+NETWORK_CONNECTED = True
+PROVISIONAL_NETWORK = False
+
+# ================== STATO SICUREZZA ==================
+security_score = 100
+threats_found = []
+
+# ================== SCANSIONE RETE ==================
+def scan_network():
+    global NETWORK_CONNECTED, PROVISIONAL_NETWORK, security_score
+
+    print("\n Scansione rete in corso...")
+    suspicious_ips = ["45.12.88.3", "185.22.19.4"]  # simulazione
+
+    if suspicious_ips:
+        print(" MINACCIA DI RETE RILEVATA")
+        for ip in suspicious_ips:
+            threats_found.append(("rete", ip, "Botnet / C2"))
+
+        # stacco immediato
+        NETWORK_CONNECTED = False
+        PROVISIONAL_NETWORK = True
+        security_score -= 40
+
+        print(" Rete principale DISCONNESSA")
+        print("Rete provvisoria isolata ATTIVATA")
+
+    else:
+        print(" Rete sicura")
+
+# ================== SCANSIONE DISPOSITIVO ==================
+def scan_device(paths):
+    global security_score
+
+    print("\n🖥️ Scansione dispositivo in corso...")
+
+    for path in paths:
+        if os.path.isfile(path):
+            threat, danger, reasons = ai_static_analysis(path)
+            if threat != "Pulita":
+                threats_found.append(("dispositivo", path, threat, danger))
+                security_score -= danger * 3
+
+# ================== GESTIONE MINACCE DISPOSITIVO ==================
+def handle_device_threats():
+    for t in threats_found:
+        if t[0] == "dispositivo":
+            _, path, threat, danger = t
+
+            print("\n MINACCIA SUL DISPOSITIVO")
+            print(f"File: {path}")
+            print(f"Tipo: {threat}")
+            print(f"Pericolosità: {danger}/10")
+
+            # SCELTA OBBLIGATORIA
+            while True:
+                print("\nAZIONE OBBLIGATORIA:")
+                print("1) Rimuovi app/file")
+                print("2) Pulisci automaticamente")
+
+                choice = input("Scelta: ")
+
+                if choice == "1":
+                    quarantine(path)
+                    print(" File rimosso")
+                    break
+
+                elif choice == "2":
+                    with open(path, "w") as f:
+                        f.write("# FILE RIPULITO DAL SISTEMA\n")
+                    print(" File ripulito automaticamente")
+                    break
+
+                else:
+                    print(" Devi scegliere un'opzione valida")
+
+# ================== PUNTEGGIO SICUREZZA ==================
+def show_security_status():
+    score = max(0, security_score)
+    print("\n STATO SICUREZZA DISPOSITIVO")
+
+    if score >= 80:
+        level = "ALTO"
+    elif score >= 50:
+        level = "MEDIO"
+    else:
+        level = "CRITICO"
+
+    print(f"Protezione: {score}%")
+    print(f"Livello: {level}")
+
+# ================== SCANSIONE TOTALE ==================
+def full_security_scan():
+    print("\n==============================")
+    print(" SCANSIONE TOTALE SICUREZZA ")
+    print("==============================")
+
+    scan_network()
+    scan_device(["kernel.py", "launcher.py", "test_app.py"])
+
+    if any(t[0] == "dispositivo" for t in threats_found):
+        handle_device_threats()
+
+    show_security_status()
+
+    print("\n''Scansione totale completata")
+
+# ================== AVVIO ==================
+if __name__ == "__main__":
+    full_security_scan()
