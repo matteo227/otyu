@@ -54,8 +54,8 @@ def monitora():
         for root,_,files in os.walk(MONITOR):
             for f in files:
                 p = os.path.join(root,f); h = calcola_hash(p)
-                if p not in hashes: print(f"🆕 Nuovo file: {p}")
-                elif hashes[p]!=h: print(f"⚠️ Modifica sospetta: {p}")
+                if p not in hashes: print(f" Nuovo file: {p}")
+                elif hashes[p]!=h: print(f" Modifica sospetta: {p}")
                 hashes[p] = h
         time.sleep(5)
 
@@ -64,7 +64,7 @@ import subprocess
 
 def scan_folder(folder_path):
     if not os.path.isdir(folder_path):
-        print(f"❌ La cartella '{folder_path}' non esiste.")
+        print(f" La cartella '{folder_path}' non esiste.")
         return
 
     for root, _, files in os.walk(folder_path):
