@@ -1,16 +1,158 @@
-import request
-def text_traductor_of_position
-google.com
-def get_webpage(url):
-  try: 
-    response = request.get(url)
-    response.raise_for_status()
-    return response.text
-except request.execeptions.RequestExeceptions as e:
-return f"Errore: [e]"
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import quote_plus
 
-url = "https://www.malwerebites.com"
-content = get_webpage( url)
+HEADERS = {
+    "User-Agent": "LLDE-Browser/1.1"
+}
 
-if content:
-  print(content)
+def search(query: str, max_results: int = 10):
+    results = []
+
+    query_encoded = quote_plus(query)
+    url = f"https://duckduckgo.com/html/?q={query_encoded}"
+
+    response = requests.get(url, headers=HEADERS, timeout=3)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    links = soup.select("a.result__a")
+
+    for link in links[:max_results]:
+        title = link.get_text()
+        href = link.get("href")
+
+        if title and href:
+            results.append({
+                "title": title,
+                "url": href
+            })
+
+    return results
+from search_engine import search
+
+query = input(" Cerca: ")
+
+results = search(query)
+
+print("\n--- RISULTATI ---\n")
+for i, r in enumerate(results, 1):
+    print(f"{i}. {r['title']}")
+    print(f"   {r['url']}\n")
+
+import re
+from scanner import scan_website
+
+# pattern da RIMUOVERE (malware comune)
+MALWARE_REGEX = [
+    r"<script.*?>.*?</script>",
+    r"<iframe.*?>.*?</iframe>",
+    r"onerror\s*=",
+    r"onclick\s*=",
+    r"eval\s*\(",
+]
+
+
+def sanitize_html(html: str) -> str:
+    """
+    Rimuove codice pericoloso dal contenuto HTML
+    """
+    clean = html
+    for pattern in MALWARE_REGEX:
+        clean = re.sub(pattern, "", clean, flags=re.IGNORECASE | re.DOTALL)
+    return clean
+
+
+def handle_malware(url: str, html: str):
+    print("\n MALWARE RILEVATO ")
+    print("1) Rimuovi malware e carica sito (SAFE MODE)")
+    print("2) Chiudi sito")
+
+    choice = input("Scegli (1/2): ").strip()
+
+    if choice == "1":
+        print("Pulizia contenuto in corso...")
+        clean_html = sanitize_html(html)
+        print(" Sito caricato in SAFE MODE")
+        return clean_html
+
+    else:
+        print(" Sito BLOCCATO")
+        return None
+import requests
+from scanner import scan_website
+from secure_loader import handle_malware
+
+def open_site(url: str):
+    scan = scan_website(url)
+
+    if scan.safe:
+        print(" Sito sicuro. Caricamento...")
+        return
+
+    # malware trovato
+    try:
+        r = requests.get(url, timeout=3)
+        html = r.text
+    except Exception:
+        print(" Errore nel caricamento")
+        return
+
+    result = handle_malware(url, html)
+
+    if result is None:
+        return
+
+    # qui in futuro mostrerai l'HTML pulito nel browser
+    print(" Contenuto pulito pronto (SAFE MODE)")
+
+if time.time() - start_time >= SCAN_TIME_LIMIT:3            import socket
+import subprocess
+import platform
+
+def check_internet(host="8.8.8.8", port=53, timeout=3):
+    """
+    Controlla se c'è connessione Internet provando a connettersi a Google DNS
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((host, port))
+        sock.close()
+        return True
+    except Exception:
+        return False
+
+def diagnose_internet():
+    """
+    Diagnostica semplice: ping e info rete
+    """
+    print("\n🔧 Diagnostica rete in corso...")
+
+    # ping a Google
+    ping_cmd = "ping -c 4 8.8.8.8" if platform.system() != " Mac OS" else "ping -n 4 8.8.8.8"
+    try:
+        subprocess.run(ping_cmd, shell=True)
+    except Exception:
+        print("Errore ping")
+
+    # info interfacce (solo esempio)
+    print("\n ''Informazioni interfaccia locale:")
+    if platform.system() == "Mac OS":
+        subprocess.run("ipconfig", shell=True)
+    else:
+        subprocess.run("ifconfig", shell=True)
+
+def handle_no_internet():
+    print("\n Nessuna connessione Internet rilevata!")
+    print("1) Chiudi browser")
+    print("2) Diagnostica il tuo Internet")
+
+    choice = input("Scegli (1/2): ").strip()
+
+    if choice == "1":
+        print(" Browser chiuso")
+        exit(0)
+    elif choice == "2":
+        diagnose_internet()
+    else:
+        print(" Scelta non valida")
