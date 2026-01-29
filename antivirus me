@@ -1,287 +1,140 @@
-import hashlib
-import os
-import re
-from datetime import datetime
-
-# ================== REGOLE IMMUTABILI ==================
-DANGEROUS_KEYWORDS = (
-    "eval(", "exec(", "subprocess", "os.system",
-    "socket", "base64", "pickle", "ctypes",
-    "powershell", "cmd.exe"
-)
-
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
-QUARANTINE_DIR = "quarantine"
-
-os.makedirs(QUARANTINE_DIR, exist_ok=True)
-
-# ================== AI ENGINE ==================
-def ai_static_analysis(file_path):
-    danger = 0
-    reasons = []
-
-    if os.path.getsize(file_path) > MAX_FILE_SIZE:
-        danger += 2
-        reasons.append("File molto grande")
-
-    with open(file_path, "rb") as f:
-        content = f.read()
-
-    text = content.decode(errors="ignore")
-
-    # keyword sospette
-    for k in DANGEROUS_KEYWORDS:
-        if k in text:
-            danger += 2
-            reasons.append(f"Keyword sospetta: {k}")
-
-    # offuscamento
-    if re.search(r"[A-Za-z0-9+/]{100,}={0,2}", text):
-        danger += 3
-        reasons.append("Possibile offuscamento Base64")
-
-    # persistenza
-    if "startup" in text or "autorun" in text:
-        danger += 3
-        reasons.append("Tentativo persistenza")
-
-    # classificazione AI
-    if danger >= 9:
-        threat = "Malware Critico"
-    elif danger >= 6:
-        threat = "App Maligna"
-    elif danger >= 4:
-        threat = "App Sospetta"
-    else:
-        threat = "Pulita"
-
-    return threat, min(danger, 10), reasons
-
-# ================== HASH ==================
-def calculate_hash(file_path):
-    h = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-# ================== QUARANTENA ==================
-def quarantine(file_path):
-    name = os.path.basename(file_path)
-    target = os.path.join(QUARANTINE_DIR, name)
-    os.rename(file_path, target)
-    return target
-
-# ================== SCANSIONE APP ==================
-def scan_app(file_path):
-    print(f"\n🔍 Scansione app: {file_path}")
-
-    hash_value = calculate_hash(file_path)
-    threat, danger, reasons = ai_static_analysis(file_path)
-
-    print(f"Hash: {hash_value}")
-    print(f"Minaccia: {threat}")
-    print(f"Pericolosità: {danger}/10")
-
-    for r in reasons:
-        print(f" - {r}")
-
-    # decisione finale
-    if danger >= 6:
-        q = quarantine(file_path)
-        print(f" BLOCCATA e messa in quarantena: {q}")
-        return False
-
-    
-    return True
-
-# ================== LAUNCHER OS ==================
-def open_app(file_path):
-    if scan_app(file_path):
-        os.system(f"python {file_path}")
-
-# ================== TEST ==================
-if __name__ == "__main__":
-    open_app("test_app.py")
-def scan_app(file_path):
-    print(f"\n🔍 Scansione: {file_path}")
-
-    hash_value = calculate_hash(file_path)
-    threat, danger, reasons = ai_static_analysis(file_path)
-
-    print(f"Hash: {hash_value}")
-    print(f"Risultato: {threat}")
-
-    
-    if threat != "Pulita":
-        print(f"Pericolosità: {danger}/10")
-        for r in reasons:
-            print(f" - {r}")
-
-    # decisione finale
-    if danger >= 6:
-        q = quarantine(file_path)
-        print(f"BLOCCATA e messa in quarantena: {q}")
-        return False
-
-    if threat != "Pulita":
-        print(" File consentito ma sotto monitoraggio")
-
-    else:
-        print(" File sicuro")
-
-    return True
-import os
+class: Door Defender
 import sys
-
-# ================== FILE CRITICI ==================
-BOOT_FILES = [
-    "kernel.py",
-    "launcher.py",
-    "firewall.py",
-    "antivirus.py"
-]
-
-STARTUP_DIR = "startup"
-
-# ================== AVVIO PROTETTO ==================
-def secure_boot():
-    print(" Avvio protetto in corso...")
-
-    # 1️ Scansione file di boot
-    for f in BOOT_FILES:
-        if os.path.exists(f):
-            if not scan_app(f):
-                print(" AVVIO BLOCCATO: file di sistema compromesso")
-                sys.exit(1)
-
-    # 2️ Scansione servizi di startup
-    if os.path.isdir(STARTUP_DIR):
-        for file in os.listdir(STARTUP_DIR):
-            path = os.path.join(STARTUP_DIR, file)
-            if os.path.isfile(path):
-                if not scan_app(path):
-                    print(" AVVIO BLOCCATO: startup malevolo")
-                    sys.exit(1)
-
-    print("Avvio protetto completato. Sistema sicuro.")
-
-# ================== ENTRY POINT OS ==================
-if __name__ == "__main__":
-    secure_boot()
-    print(" Avvio sistema operativo...")
 import os
-import sys
 import time
 
-# ================== RETE ==================
-NETWORK_CONNECTED = True
-PROVISIONAL_NETWORK = False
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QLabel, QPushButton,
+    QVBoxLayout, QProgressBar, QMessageBox
+)
+from PySide6.QtCore import Qt, QThread, Signal
 
-# ================== STATO SICUREZZA ==================
-security_score = 100
-threats_found = []
 
-# ================== SCANSIONE RETE ==================
-def scan_network():
-    global NETWORK_CONNECTED, PROVISIONAL_NETWORK, security_score
+SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
 
-    print("\n Scansione rete in corso...")
-    suspicious_ips = ["45.12.88.3", "185.22.19.4"]  # simulazione
 
-    if suspicious_ips:
-        print(" MINACCIA DI RETE RILEVATA")
-        for ip in suspicious_ips:
-            threats_found.append(("rete", ip, "Botnet / C2"))
+class ScanThread(QThread):
+    progress = Signal(int)
+    threat_found = Signal(str)
+    finished = Signal()
 
-        # stacco immediato
-        NETWORK_CONNECTED = False
-        PROVISIONAL_NETWORK = True
-        security_score -= 40
+    def run(self):
+        scanned = 0
+        max_files = 3000
 
-        print(" Rete principale DISCONNESSA")
-        print("Rete provvisoria isolata ATTIVATA")
+        for root, dirs, files in os.walk(os.path.expanduser("~")):
+            for file in files:
+                scanned += 1
+                file_path = os.path.join(root, file)
 
-    else:
-        print(" Rete sicura")
+                for word in SUSPICIOUS_WORDS:
+                    if word in file.lower():
+                        self.threat_found.emit(file_path)
+                        return
 
-# ================== SCANSIONE DISPOSITIVO ==================
-def scan_device(paths):
-    global security_score
+                if scanned % 20 == 0:
+                    percent = int((scanned / max_files) * 100)
+                    self.progress.emit(min(percent, 99))
 
-    print("\n🖥️ Scansione dispositivo in corso...")
+                if scanned >= max_files:
+                    self.progress.emit(100)
+                    self.finished.emit()
+                    return
 
-    for path in paths:
-        if os.path.isfile(path):
-            threat, danger, reasons = ai_static_analysis(path)
-            if threat != "Pulita":
-                threats_found.append(("dispositivo", path, threat, danger))
-                security_score -= danger * 3
+                time.sleep(0.005)
 
-# ================== GESTIONE MINACCE DISPOSITIVO ==================
-def handle_device_threats():
-    for t in threats_found:
-        if t[0] == "dispositivo":
-            _, path, threat, danger = t
+        self.progress.emit(100)
+        self.finished.emit()
 
-            print("\n MINACCIA SUL DISPOSITIVO")
-            print(f"File: {path}")
-            print(f"Tipo: {threat}")
-            print(f"Pericolosità: {danger}/10")
 
-            # SCELTA OBBLIGATORIA
-            while True:
-                print("\nAZIONE OBBLIGATORIA:")
-                print("1) Rimuovi app/file")
-                print("2) Pulisci automaticamente")
+class AntivirusApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("SecureOS Antivirus")
+        self.resize(540, 440)
 
-                choice = input("Scelta: ")
+        layout = QVBoxLayout(self)
+        layout.setSpacing(16)
 
-                if choice == "1":
-                    quarantine(path)
-                    print(" File rimosso")
-                    break
+        self.title = QLabel("Protezione del dispositivo")
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setStyleSheet("font-size: 22px; font-weight: 600;")
 
-                elif choice == "2":
-                    with open(path, "w") as f:
-                        f.write("# FILE RIPULITO DAL SISTEMA\n")
-                    print(" File ripulito automaticamente")
-                    break
+        self.status = QLabel("Stato: Protetto")
+        self.status.setAlignment(Qt.AlignCenter)
 
-                else:
-                    print(" Devi scegliere un'opzione valida")
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
 
-# ================== PUNTEGGIO SICUREZZA ==================
-def show_security_status():
-    score = max(0, security_score)
-    print("\n STATO SICUREZZA DISPOSITIVO")
+        self.scan_button = QPushButton("Avvia scansione completa")
+        self.scan_button.setFixedHeight(42)
+        self.scan_button.clicked.connect(self.start_scan)
 
-    if score >= 80:
-        level = "ALTO"
-    elif score >= 50:
-        level = "MEDIO"
-    else:
-        level = "CRITICO"
+        layout.addWidget(self.title)
+        layout.addWidget(self.status)
+        layout.addWidget(self.progress)
+        layout.addWidget(self.scan_button)
 
-    print(f"Protezione: {score}%")
-    print(f"Livello: {level}")
+        self.apply_style()
 
-# ================== SCANSIONE TOTALE ==================
-def full_security_scan():
-    print("\n==============================")
-    print(" SCANSIONE TOTALE SICUREZZA ")
-    print("==============================")
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #f9f9f9;
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
 
-    scan_network()
-    scan_device(["kernel.py", "launcher.py", "test_app.py"])
+        QPushButton {
+            background-color: #0078d7;
+            color: white;
+            border-radius: 8px;
+        }
 
-    if any(t[0] == "dispositivo" for t in threats_found):
-        handle_device_threats()
+        QPushButton:hover {
+            background-color: #005fa3;
+        }
 
-    show_security_status()
+        QProgressBar {
+            height: 16px;
+            border-radius: 8px;
+            background: #e0e0e0;
+        }
 
-    print("\n''Scansione totale completata")
+        QProgressBar::chunk {
+            background: #0078d7;
+            border-radius: 8px;
+        }
+        """)
 
-# ================== AVVIO ==================
-if __name__ == "__main__":
-    full_security_scan()
+    def start_scan(self):
+        self.progress.setValue(0)
+        self.status.setText("Scansione in corso")
+        self.scan_button.setEnabled(False)
+
+        self.thread = ScanThread()
+        self.thread.progress.connect(self.progress.setValue)
+        self.thread.threat_found.connect(self.handle_threat)
+        self.thread.finished.connect(self.scan_finished)
+        self.thread.start()
+
+    def handle_threat(self, file_path):
+        self.thread.terminate()
+        self.status.setText("Minaccia rilevata")
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Minaccia rilevata")
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(f"Malware trovato:\n{file_path}")
+        msg.setInformativeText("Scegli un'azione obbligatoria")
+
+        clean_btn = msg.addButton("Pulisci", QMessageBox.AcceptRole)
+        remove_btn = msg.addButton("Rimuovi", QMessageBox.DestructiveRole)
+
+        msg.exec()
+
+        if msg.clickedButton() == clean_btn:
+            self.status.setText("Minaccia pulita")
+        else:
+            try:
+                os.remove(file_path)
