@@ -70,7 +70,7 @@ def scan_folder(folder_path):
     for root, _, files in os.walk(folder_path):
         for file in files:
             file_path = os.path.join(root, file)
-            print(f"🔍 Scansione di: {file_path}")
+            print(f" Scansione di: {file_path}")
             try:
                 result = subprocess.run(["MpCmdRun.exe", "-Scan", "-ScanType", "3", "-File", file_path],
                                         capture_output=True
