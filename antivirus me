@@ -1,4 +1,4 @@
-class: Door Defender
+class: DoorSecurity
 import sys
 import os
 import time
