@@ -173,36 +173,144 @@ return jsonify(next((a for a in apps if a['id'] == app_id), None)) or ('Not foun
 if__name__ == '__main__':
  app.run()
 
-class Impostazioni: watermark_preview_image20250606-1-iuquaz-1.png
-import tkinter as tk
-from tkinter import messagebox
+class Impostazioni: import sys
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QListWidget, QStackedWidget,
+    QHBoxLayout, QVBoxLayout, QLabel, QSlider
+)
+from PySide6.QtCore import Qt
 
-def mostra_impostazione(impostazione)
-messagebox.showinfo("Impostazione Selezionata", f"Hai selezionato: [impostazione]")
 
-finestra = tk.Tk()
-finestra.title("Impostazione di Sistema")
+class SettingsApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Impostazioni")
+        self.resize(950, 550)
 
-frame = tk.Frame(finestra)
-frame.pack(pady=10)
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
 
-bottone_rete = tk.Button(frame, text=",Impostazioni Rete", command=lambda: mostra_impostazione("Rete"))
-bottone_rete.pack(pady=5)
+        self.menu = QListWidget()
+        self.menu.addItems(["Sistema", "Schermo", "Rete", "Account"])
+        self.menu.setFixedWidth(240)
+        self.menu.setSpacing(4)
 
-bottone_audio = tk.Button(frame, text="Impostazione Audio", command=lambada: mostra_impostazione("Audio"))
-bottone_audio.pack(pady=5)
+        self.pages = QStackedWidget()
+        self.pages.setStyleSheet("background-color: #f9f9f9;")
 
-bottone_video = tk.Button(frame, text="Impostazioni Video", command=lambda: mostra_impostazione("Video"))
-Bottone_video.pack(pady=5)
+        self.pages.addWidget(self.system_page())
+        self.pages.addWidget(self.display_page())
+        self.pages.addWidget(self.network_page())
+        self.pages.addWidget(self.account_page())
 
-import request,os,tempfile
-u,d='VERSION_URL','DOWNOLOAD_URL'
-r=request.get(u).text.strip()
-I=open('app.py').read().split()[-1]if os.path.exists('app.py')else'0'
-if r>l:p=tempfile.mktemp('.py');open(p, 'wb').write(request.get(d).content);os.replace(p,'app.py');print('Updated to',r)
-else:print('Up-to-date')
+        self.menu.currentRowChanged.connect(self.pages.setCurrentIndex)
+        self.menu.setCurrentRow(0)
 
-finestra.mainloop() 
+        main_layout.addWidget(self.menu)
+        main_layout.addWidget(self.pages)
+
+        self.apply_style()
+
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
+
+        QListWidget {
+            background: #ffffff;
+            border: none;
+            padding: 10px;
+        }
+
+        QListWidget::item {
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        QListWidget::item:selected {
+            background-color: #e6f0ff;
+            color: #000;
+        }
+
+        QListWidget::item:hover {
+            background-color: #f0f0f0;
+        }
+
+        QLabel {
+            color: #202020;
+        }
+
+        QSlider::groove:horizontal {
+            height: 6px;
+            background: #d0d0d0;
+            border-radius: 3px;
+        }
+
+        QSlider::handle:horizontal {
+            width: 16px;
+            height: 16px;
+            background: #0078d7;
+            border-radius: 8px;
+            margin: -5px 0;
+        }
+        """)
+
+    def system_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Sistema")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Versione OS: 0.1 Alpha"))
+        l.addStretch()
+        return w
+
+    def display_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Schermo")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+
+        l.addWidget(QLabel("Luminosità"))
+        slider = QSlider(Qt.Horizontal)
+        slider.setRange(0, 100)
+        slider.setValue(70)
+        l.addWidget(slider)
+
+        l.addStretch()
+        return w
+
+    def network_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Rete")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Wi-Fi: Connesso"))
+        l.addStretch()
+        return w
+
+    def account_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Account")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Utente locale"))
+        l.addStretch()
+        return w
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = SettingsApp()
+    window.show()
+    sys.exit(app.exec())
+ 
 class note: watermark_preview_image20250607_1-8f7njk.png
 
 import tkinter as tk
