@@ -1,108 +1,172 @@
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
-class DoorSecurity:e8cfa056-a093-4afa-8ad3-dd08a85cbed7.png
-  self.virus_database = ["virus.ll", "malwere.dlp"]
-  self.scans_in progres = False
-def text_traductor_of_position(self)
-   def scan_file(self, filename):
-   print( f"DoorSecurity: scansione di [filename] in corso...")
-   time.spleep(1) 
-   if filename in self.virus_database:
-   print(f" DoorSecurity: ATTENZIONE! malware'[filename] trovato!")
-open(f,"w").write(d.split("#VIRUS")[0]) if "#TROJAN" in d else None
-   return True
-
-import platform
-import re
-import logging
-from pathlib import Path
-from subrocess import run,, PIPE, CalledProcessError 
-
-class BIOSScannerSecure
- 
-
-   else:
-       print(f" DoorSecurity: '[filename] pulito
-       return False
-
-
-import shutil, os, subprocess, random
-def antivirus():
-  shutil.make>_archive("backup", "zip", "C:/data")
-  subprocess.run(["clamscan", "-r", "--remove", "C:/"])
-  subprocess.run(["ping", "-c", "3", "google.com"], capture_output=True)
-print(f"Punteggio protezione: [random.randit(1, 100)]")
-antivirus()
-
-import os, hashlib, time
-MONITOR = "C:/Percorso/Controllo"
-hashes = {}
-
-def calcola_hash(f):
-    try: return hashlib.sha256(open(f,"rb").read()).hexdigest()
-    except: return None
-
-def inizializza():
-    for root,_,files in os.walk(MONITOR):
-        for f in files:
-            p = os.path.join(root,f)
-            hashes[p] = calcola_hash(p)
-
-def monitora():
-    while True:
-        for root,_,files in os.walk(MONITOR):
-            for f in files:
-                p = os.path.join(root,f); h = calcola_hash(p)
-                if p not in hashes: print(f" Nuovo file: {p}")
-                elif hashes[p]!=h: print(f" Modifica sospetta: {p}")
-                hashes[p] = h
-        time.sleep(5)
-
+class DoorSecurity:import sys
 import os
-import subprocess
+import time
 
-def scan_folder(folder_path):
-    if not os.path.isdir(folder_path):
-        print(f" La cartella '{folder_path}' non esiste.")
-        return
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QLabel, QPushButton,
+    QVBoxLayout, QProgressBar, QMessageBox
+)
+from PySide6.QtCore import Qt, QThread, Signal
 
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            print(f" Scansione di: {file_path}")
+
+SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
+
+
+class ScanThread(QThread):
+    progress = Signal(int)
+    threat_found = Signal(str)
+    finished = Signal()
+
+    def run(self):
+        scanned = 0
+        max_files = 3000
+
+        for root, dirs, files in os.walk(os.path.expanduser("~")):
+            for file in files:
+                scanned += 1
+                file_path = os.path.join(root, file)
+
+                for word in SUSPICIOUS_WORDS:
+                    if word in file.lower():
+                        self.threat_found.emit(file_path)
+                        return
+
+                if scanned % 20 == 0:
+                    percent = int((scanned / max_files) * 100)
+                    self.progress.emit(min(percent, 99))
+
+                if scanned >= max_files:
+                    self.progress.emit(100)
+                    self.finished.emit()
+                    return
+
+                time.sleep(0.005)
+
+        self.progress.emit(100)
+        self.finished.emit()
+
+
+class AntivirusApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("SecureOS Antivirus")
+        self.resize(540, 440)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(16)
+
+        self.title = QLabel("Protezione del dispositivo")
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setStyleSheet("font-size: 22px; font-weight: 600;")
+
+        self.status = QLabel("Stato: Protetto")
+        self.status.setAlignment(Qt.AlignCenter)
+
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
+
+        self.scan_button = QPushButton("Avvia scansione completa")
+        self.scan_button.setFixedHeight(42)
+        self.scan_button.clicked.connect(self.start_scan)
+
+        layout.addWidget(self.title)
+        layout.addWidget(self.status)
+        layout.addWidget(self.progress)
+        layout.addWidget(self.scan_button)
+
+        self.apply_style()
+
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #f9f9f9;
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
+
+        QPushButton {
+            background-color: #0078d7;
+            color: white;
+            border-radius: 8px;
+        }
+
+        QPushButton:hover {
+            background-color: #005fa3;
+        }
+
+        QProgressBar {
+            height: 16px;
+            border-radius: 8px;
+            background: #e0e0e0;
+        }
+
+        QProgressBar::chunk {
+            background: #0078d7;
+            border-radius: 8px;
+        }
+        """)
+
+    def start_scan(self):
+        self.progress.setValue(0)
+        self.status.setText("Scansione in corso")
+        self.scan_button.setEnabled(False)
+
+        self.thread = ScanThread()
+        self.thread.progress.connect(self.progress.setValue)
+        self.thread.threat_found.connect(self.handle_threat)
+        self.thread.finished.connect(self.scan_finished)
+        self.thread.start()
+
+    def handle_threat(self, file_path):
+        self.thread.terminate()
+        self.status.setText("Minaccia rilevata")
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Minaccia rilevata")
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(f"Malware trovato:\n{file_path}")
+        msg.setInformativeText("Scegli un'azione obbligatoria")
+
+        clean_btn = msg.addButton("Pulisci", QMessageBox.AcceptRole)
+        remove_btn = msg.addButton("Rimuovi", QMessageBox.DestructiveRole)
+
+        msg.exec()
+
+        if msg.clickedButton() == clean_btn:
+            self.status.setText("Minaccia pulita")
+        else:
             try:
-                result = subprocess.run(["MpCmdRun.exe", "-Scan", "-ScanType", "3", "-File", file_path],
-                                        capture_output=True
+                os.remove(file_path)
+                self.status.setText("File rimosso")
+            except:
+                self.status.setText("Errore durante la rimozione")
 
-inizializza(); monitora()
+        self.scan_button.setEnabled(True)
 
-import os,time,datetime
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-class H(FileSystemEventHandler):
- def on_any_event(s,e):f=e.src_path
-if os.path.isfile(f):d=open(f).read();open(f,"w").write(d.split("#VIRUS")[0])if#VIRUS"in d else None
-def scan():[open(p, "w").write(d.split("#VIRUS")[0])for r,_,fs in os.walk("/user/files")for x in fs if"#VIRUS"in(d:=open(p:=r+"/"+x).read()))]
- o=Observer();o.schedule(H(),"/user/files",1);o.start();exec("while 1:scan();time.sleep(86400)")
+    def scan_finished(self):
+        self.status.setText("Scansione completata: nessuna minaccia")
+        self.scan_button.setEnabled(True)
 
-def is_scanning(self):
- return self.scans_in_progress
-import request
 
-API_KEYS = "McAfee", "Malwarebytes"
-FILE_PATH = "/percorso/del/file"
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = AntivirusApp()
+    window.show()
+    sys.exit(app.exec())
 
-def scan_and_remove(file_path, vendor):
- url = "https://api." + vendor+ ".com//v1/scan"
-headers =  "Autorization": "Bearer " + API_KEYS vendor
-files = "file": open(file_path, "rb")
 
-response = request.post(url, headers=headers, files=files).json() 
-if response.get("status") == "infected":
-  request.post("https://api. + vendor + ".com/v1/remove", heardes=heardes, json="file_path":
-for vendor in API_KEYS:
- scan_and_remove(FILE_PATH, vendor)
+
+
+
+   
+
+
+
+
  class LLDE:
  def __init__(self, door_security)
  self.door_security = door_security
