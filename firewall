@@ -1,164 +1,155 @@
-import socket
-import threading
-
-
-blocked_ips = {"192.168.1.100"}
-blocked_ports = {22, 23}  # ad esempio blocco SSH e Telnet
-
-def handle_client(client_socket, client_address):
-    ip, port = client_address
-    print(f"Connessione da {ip}:{port}")
-
-    
-    if ip in blocked_ips:
-        print(f"Bloccato IP: {ip}")
-        client_socket.close()
-        return
-    
-    
-    if port in blocked_ports:
-        print(f"Bloccata porta: {port}")
-        client_socket.close()
-        return
-
-    
-    try:
-        data = client_socket.recv(1024)
-        print(f"Ricevuto: {data} da {ip}:{port}")
-        client_socket.send(b"Connessione accettata")
-    except Exception as e:
-        print(f"Errore: {e}")
-    finally:
-        client_socket.close()
-
-
-def start_firewall(host='0.0.0.0', port=9999):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((host, port))
-    server.listen(5)
-    print(f"Firewall attivo su {host}:{port}")
-
-    while True:
-        client_sock, addr = server.accept()
-        client_thread = threading.Thread(target=handle_client, args=(client_sock, addr))
-        client_thread.start()
-
-if __name__ == "__main__":
-    start_firewall()
-import socket
-import threading
+class: Firewall
+import sys
+import random
 import time
-from datetime import datetime
 
-# ================== ASSISTENZA ==================
-ASSISTANCE_KEY = "SECURE-OS-ADMIN-KEY"  # SOLO ASSISTENZA
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QLabel, QPushButton,
+    QVBoxLayout, QTableWidget, QTableWidgetItem,
+    QProgressBar
+)
+from PySide6.QtCore import Qt, QThread, Signal
 
-# ================== REGOLE IMMUTABILI ==================
-IMMUTABLE_BLOCKED_PORTS = (22, 23, 445)
-IMMUTABLE_BLOCKED_IP_PREFIX = ("45.", "185.", "92.")
 
-# ================== DATABASE AI ==================
-connection_history = {}
-blocked_connections = []
+# Regole IMMUTABILI
+IMMUTABLE_RULES = {
+    "block_trojans": True,
+    "block_malware": True,
+    "block_suspicious_network": True
+}
 
-# ================== AI ENGINE ==================
-def ai_scan(ip, port):
-    now = time.time()
-    history = connection_history.setdefault(ip, [])
 
-    history.append(now)
-    history = [t for t in history if now - t < 60]
-    connection_history[ip] = history
+SIMULATED_THREATS = [
+    "Trojan.Generic",
+    "Backdoor.Win32",
+    "Worm.AutoRun",
+    "Spyware.Agent",
+    "Ransom.Crypt"
+]
 
-    danger = 0
-    reason = []
 
-    # Frequenza alta
-    if len(history) > 10:
-        danger += 4
-        reason.append("Connessioni ripetute")
+class AIScanThread(QThread):
+    progress = Signal(int)
+    threat = Signal(str, int)
+    finished = Signal()
 
-    # Porte critiche
-    if port in IMMUTABLE_BLOCKED_PORTS:
-        danger += 5
-        reason.append("Porta critica")
+    def run(self):
+        for i in range(5):
+            time.sleep(1)
+            threat_name = random.choice(SIMULATED_THREATS)
+            danger = random.randint(30, 100)
 
-    # IP sospetto
-    if ip.startswith(IMMUTABLE_BLOCKED_IP_PREFIX):
-        danger += 4
-        reason.append("IP Botnet")
+            self.progress.emit((i + 1) * 20)
 
-    # Classificazione
-    if danger >= 9:
-        threat = "Malware Attivo"
-    elif danger >= 7:
-        threat = "Tentativo Intrusione"
-    elif danger >= 5:
-        threat = "Comportamento Sospetto"
-    else:
-        threat = "Basso Rischio"
+            if danger >= 50:
+                self.threat.emit(threat_name, danger)
 
-    danger = min(danger, 10)
-    return threat, danger, ", ".join(reason)
+        self.finished.emit()
 
-# ================== LOG BLOCCO ==================
-def log_block(ip, port, threat, danger, reason):
-    blocked_connections.append({
-        "ip": ip,
-        "porta": port,
-        "minaccia": threat,
-        "pericolo": danger,
-        "motivo": reason,
-        "orario": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
 
-    print(f"[AI-BLOCK] {ip}:{port} | {threat} | {danger}/10 | {reason}")
+class FirewallApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("SecureOS Firewall")
+        self.resize(720, 480)
 
-# ================== FIREWALL CORE ==================
-def handle_client(sock, addr):
-    ip, port = addr
+        layout = QVBoxLayout(self)
+        layout.setSpacing(14)
 
-    threat, danger, reason = ai_scan(ip, port)
+        self.title = QLabel("Firewall e protezione rete")
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setStyleSheet("font-size: 22px; font-weight: 600;")
 
-    if port in IMMUTABLE_BLOCKED_PORTS or danger >= 6:
-        log_block(ip, port, threat, danger, reason)
-        sock.close()
-        return
+        self.status = QLabel("Regole attive e immutabili")
+        self.status.setAlignment(Qt.AlignCenter)
 
-    try:
-        sock.recv(1024)
-        sock.send(b"ACCESS GRANTED")
-    except:
-        pass
-    finally:
-        sock.close()
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
 
-# ================== FIREWALL ==================
-def start_firewall():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(("0.0.0.0", 9999))
-    server.listen(50)
-    print(" SecureOS Firewall attivo (AI ENABLED)")
+        self.scan_button = QPushButton("Avvia analisi AI (VirusTotal)")
+        self.scan_button.setFixedHeight(40)
+        self.scan_button.clicked.connect(self.start_scan)
 
-    while True:
-        client, addr = server.accept()
-        threading.Thread(target=handle_client, args=(client, addr), daemon=True).start()
+        self.table = QTableWidget(0, 3)
+        self.table.setHorizontalHeaderLabels([
+            "Minaccia",
+            "Stato",
+            "Pericolosità"
+        ])
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
 
-# ================== AREA SICUREZZA ==================
-def show_security_area():
-    print("\n=== AREA SICUREZZA (SOLO LETTURA) ===")
-    for e in blocked_connections:
-        print(
-            f"{e['orario']} | IP {e['ip']} | Porta {e['porta']} | "
-            f"{e['minaccia']} | Pericolo {e['pericolo']}/10 | {e['motivo']}"
-        )
+        layout.addWidget(self.title)
+        layout.addWidget(self.status)
+        layout.addWidget(self.progress)
+        layout.addWidget(self.scan_button)
+        layout.addWidget(self.table)
 
-# ================== ACCESSO ASSISTENZA ==================
-def assistence_modify_rules(key):
-    if key != ASSISTANCE_KEY:
-        raise PermissionError("ACCESSO NEGATO: SOLO ASSISTENZA")
-    print("Accesso assistenza concesso (modalità manutenzione)")
+        self.apply_style()
 
-# ================== START ==================
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #f9f9f9;
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
+
+        QPushButton {
+            background-color: #0078d7;
+            color: white;
+            border-radius: 8px;
+        }
+
+        QPushButton:hover {
+            background-color: #005fa3;
+        }
+
+        QProgressBar {
+            height: 16px;
+            border-radius: 8px;
+            background: #e0e0e0;
+        }
+
+        QProgressBar::chunk {
+            background: #0078d7;
+            border-radius: 8px;
+        }
+
+        QTableWidget {
+            background: white;
+            border-radius: 8px;
+        }
+        """)
+
+    def start_scan(self):
+        self.progress.setValue(0)
+        self.scan_button.setEnabled(False)
+        self.table.setRowCount(0)
+        self.status.setText("Analisi AI in corso (motore cloud simulato)")
+
+        self.thread = AIScanThread()
+        self.thread.progress.connect(self.progress.setValue)
+        self.thread.threat.connect(self.add_threat)
+        self.thread.finished.connect(self.scan_finished)
+        self.thread.start()
+
+    def add_threat(self, name, danger):
+        row = self.table.rowCount()
+        self.table.insertRow(row)
+
+        self.table.setItem(row, 0, QTableWidgetItem(name))
+        self.table.setItem(row, 1, QTableWidgetItem("Bloccata"))
+        self.table.setItem(row, 2, QTableWidgetItem(f"{danger}/100"))
+
+    def scan_finished(self):
+        self.status.setText("Analisi completata – minacce bloccate")
+        self.scan_button.setEnabled(True)
+
+
 if __name__ == "__main__":
-    start_firewall()
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = FirewallApp()
+    window.show()
+    sys.exit(app.exec())
