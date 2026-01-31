@@ -522,7 +522,7 @@ lat, lon = posizione.latlng if posizione.ok
 messaggio = f"Emergenza! posizione: [lat], [lon]"
 print(messaggio)
 
-webbroewser.open("https://www..emergenza.gov.it"
+webbroewser.open("https://www..emergenza.gov.it")
 
 # GUI
 root =tk.Tk()
