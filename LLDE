@@ -14,6 +14,51 @@ def search(query: str, max_results: int = 10):
 
     response = requests.get(url, headers=HEADERS, timeout=3)
     soup = BeautifulSoup(response.text, "html.parser")
+import os
+import webbrowser
+
+CONFIG_FILE = "browser_config.txt"
+
+search_engines = {
+    "1": ("Google", "https://www.google.com/search?q="),
+    "2": ("Bing", "https://www.bing.com/search?q="),
+    "3": ("DuckDuckGo", "https://duckduckgo.com/?q=")
+}
+
+def first_time_setup():
+    print("Benvenuto! È la prima volta che apri il browser.")
+    print("Scegli il motore di ricerca:")
+
+    for key, value in search_engines.items():
+        print(f"{key}. {value[0]}")
+
+    choice = input("Inserisci il numero: ")
+
+    if choice in search_engines:
+        with open(CONFIG_FILE, "w") as f:
+            f.write(choice)
+        print(f"Hai scelto {search_engines[choice][0]}!")
+    else:
+        print("Scelta non valida, verrà impostato Google.")
+        with open(CONFIG_FILE, "w") as f:
+            f.write("1")
+
+def get_search_engine():
+    if not os.path.exists(CONFIG_FILE):
+        first_time_setup()
+
+    with open(CONFIG_FILE, "r") as f:
+        choice = f.read().strip()
+
+    return search_engines.get(choice, search_engines["1"])
+
+def search():
+    engine_name, engine_url = get_search_engine()
+    query = input(f"Cerca con {engine_name}: ")
+    webbrowser.open(engine_url + query)
+
+if __name__ == "__main__":
+    search()
 
     links = soup.select("a.result__a")
 
@@ -105,13 +150,12 @@ def open_site(url: str):
     # qui in futuro mostrerai l'HTML pulito nel browser
     print(" Contenuto pulito pronto (SAFE MODE)")
 
-if time.time() - start_time >= SCAN_TIME_LIMIT:3            import socket
+if time.time() - start_time >= SCAN_TIME_LIMIT:3           import socket
 import subprocess
 import platform
 
 def check_internet(host="8.8.8.8", port=53, timeout=3):
     """
-    Controlla se c'è connessione Internet provando a connettersi a Google DNS
     """
     try:
         socket.setdefaulttimeout(timeout)
@@ -128,7 +172,7 @@ def diagnose_internet():
     """
     print("\n Diagnostica rete in corso...")
 
-    # ping a Google
+    
     ping_cmd = "ping -c 4 8.8.8.8" if platform.system() != " Mac OS" else "ping -n 4 8.8.8.8"
     try:
         subprocess.run(ping_cmd, shell=True)
@@ -143,7 +187,7 @@ def diagnose_internet():
         subprocess.run("ifconfig", shell=True)
 
 def handle_no_internet():
-    print("\n Nessuna connessione Internet rilevata!")
+    print("\n Nessuna connessione Internet rilevata")
     print("1) Chiudi browser")
     print("2) Diagnostica il tuo Internet")
 
