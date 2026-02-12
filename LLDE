@@ -42,7 +42,7 @@ for i, r in enumerate(results, 1):
 import re
 from scanner import scan_website
 
-# pattern da RIMUOVERE (malware comune)
+
 MALWARE_REGEX = [
     r"<script.*?>.*?</script>",
     r"<iframe.*?>.*?</iframe>",
@@ -76,7 +76,7 @@ def handle_malware(url: str, html: str):
         return clean_html
 
     else:
-        print(" Sito BLOCCATO")
+        print(" Sito potenzialmente dannoso. applicando le procedure d'emergenza...")
         return None
 import requests
 from scanner import scan_website
@@ -86,7 +86,7 @@ def open_site(url: str):
     scan = scan_website(url)
 
     if scan.safe:
-        print(" Sito sicuro. Caricamento...")
+        
         return
 
     # malware trovato
@@ -126,7 +126,7 @@ def diagnose_internet():
     """
     Diagnostica semplice: ping e info rete
     """
-    print("\n🔧 Diagnostica rete in corso...")
+    print("\n Diagnostica rete in corso...")
 
     # ping a Google
     ping_cmd = "ping -c 4 8.8.8.8" if platform.system() != " Mac OS" else "ping -n 4 8.8.8.8"
