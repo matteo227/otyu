@@ -1,0 +1,564 @@
+import sys
+
+def confirm_installation():
+    print("=" * 50)
+    print("ATTENZIONE!")
+    print("Installando questo sistema operativo")
+    print("potresti perdere il sistema attuale.")
+    print("Assicurati di aver fatto un backup.")
+    print("=" * 50)
+
+    choice = input("Sei sicuro di voler continuare? (si/no): ").lower()
+
+    if choice != "si":
+        print("Installazione annullata.")
+        sys.exit()
+
+    final_check = input("Scrivi 'CONFERMO' per procedere: ")
+
+    if final_check == "CONFERMO":
+        print("Conferma accettata. Avvio installazione...")
+        return True
+    else:
+        print("Conferma non valida. Installazione bloccata.")
+        sys.exit()
+
+
+if __name__ == "__main__":
+    confirm_installation()
+a import time
+import treading
+print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
+class DoorSecurity:import sys
+import os
+import time
+
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QLabel, QPushButton,
+    QVBoxLayout, QProgressBar, QMessageBox
+)
+from PySide6.QtCore import Qt, QThread, Signal
+
+
+SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
+
+
+class ScanThread(QThread):
+    progress = Signal(int)
+    threat_found = Signal(str)
+    finished = Signal()
+
+    def run(self):
+        scanned = 0
+        max_files = 3000
+
+        for root, dirs, files in os.walk(os.path.expanduser("~")):
+            for file in files:
+                scanned += 1
+                file_path = os.path.join(root, file)
+
+                for word in SUSPICIOUS_WORDS:
+                    if word in file.lower():
+                        self.threat_found.emit(file_path)
+                        return
+
+                if scanned % 20 == 0:
+                    percent = int((scanned / max_files) * 100)
+                    self.progress.emit(min(percent, 99))
+
+                if scanned >= max_files:
+                    self.progress.emit(100)
+                    self.finished.emit()
+                    return
+
+                time.sleep(0.005)
+
+        self.progress.emit(100)
+        self.finished.emit()
+
+
+class AntivirusApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("SecureOS Antivirus")
+        self.resize(540, 440)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(16)
+
+        self.title = QLabel("Protezione del dispositivo")
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setStyleSheet("font-size: 22px; font-weight: 600;")
+
+        self.status = QLabel("Stato: Protetto")
+        self.status.setAlignment(Qt.AlignCenter)
+
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
+
+        self.scan_button = QPushButton("Avvia scansione completa")
+        self.scan_button.setFixedHeight(42)
+        self.scan_button.clicked.connect(self.start_scan)
+
+        layout.addWidget(self.title)
+        layout.addWidget(self.status)
+        layout.addWidget(self.progress)
+        layout.addWidget(self.scan_button)
+
+        self.apply_style()
+
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            background-color: #f9f9f9;
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
+
+        QPushButton {
+            background-color: #0078d7;
+            color: white;
+            border-radius: 8px;
+        }
+
+        QPushButton:hover {
+            background-color: #005fa3;
+        }
+
+        QProgressBar {
+            height: 16px;
+            border-radius: 8px;
+            background: #e0e0e0;
+        }
+
+        QProgressBar::chunk {
+            background: #0078d7;
+            border-radius: 8px;
+        }
+        """)
+
+    def start_scan(self):
+        self.progress.setValue(0)
+        self.status.setText("Scansione in corso")
+        self.scan_button.setEnabled(False)
+
+        self.thread = ScanThread()
+        self.thread.progress.connect(self.progress.setValue)
+        self.thread.threat_found.connect(self.handle_threat)
+        self.thread.finished.connect(self.scan_finished)
+        self.thread.start()
+
+    def handle_threat(self, file_path):
+        self.thread.terminate()
+        self.status.setText("Minaccia rilevata")
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Minaccia rilevata")
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(f"Malware trovato:\n{file_path}")
+        msg.setInformativeText("Scegli un'azione obbligatoria")
+
+        clean_btn = msg.addButton("Pulisci", QMessageBox.AcceptRole)
+        remove_btn = msg.addButton("Rimuovi", QMessageBox.DestructiveRole)
+
+        msg.exec()
+
+        if msg.clickedButton() == clean_btn:
+            self.status.setText("Minaccia pulita")
+        else:
+            try:
+                os.remove(file_path)
+                self.status.setText("File rimosso")
+            except:
+                self.status.setText("Errore durante la rimozione")
+
+        self.scan_button.setEnabled(True)
+
+    def scan_finished(self):
+        self.status.setText("Scansione completata: nessuna minaccia")
+        self.scan_button.setEnabled(True)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = AntivirusApp()
+    window.show()
+    sys.exit(app.exec())
+
+
+
+
+
+   
+
+
+
+
+ class LLDE:
+ def __init__(self, door_security)
+ self.door_security = door_security
+
+ def open_url(self, url)
+ print(f"LLDE: Apertuta di'[url]'...")
+ self.current_url = None
+
+ def open_url(self, url):
+ print(f"LLDE: aperturadi' [url]'...")
+ self.current_url = url
+ if "download.ll" in url:
+  if self.door_Security.scan_file("download.ll"):
+print("LLDE:  sono state rilevate minacce dentro il download!")
+def controll_databesa
+else:
+print (" download completato con successo")
+
+from http.server import HTTPServer, BaseHTTPRequestHandler; import requests, os
+os.makedirs('cache', exist_ok=True)
+class H(BaseHTTPRequestHandler):
+    def do_GET(self): url=self.path[1:];fn=f"cache/{url.replace('://','_').replace('/','_')}.html";data=open(fn,'rb').read() if os.path.exists(fn) else (open(fn,'wb').write(requests.get(url).content) or open(fn,'rb').read());self.send_response(200);self.end_headers();self.wfile.write(data)
+HTTPServer(('0.0.0.0', 8888), H).serve_forever()
+
+
+
+
+def check_security(self):
+  if self.current_url:
+  if "malicious in self.current_url
+  print("LLDE: vi preghiamo di uscire da questo sito è potenziealmente dannoso")
+     else:
+   print("sito non sicuro")
+   class DoorOS
+def __init__(self):
+self.door_Security=DoorSecurity(1)
+self.llde =LLDE(self.door_security)
+
+start(self):
+print("DoorOS: Avvio in corso....")
+defender_thread = threading.Thread(target=self.door_defender.start_backgruond_scan)
+defender_thread.start()
+def run_llde(self):
+print("DoorOS:Avvio LLDE...")
+self.llde.open_url("google.com")
+self.llde.check_security(10)      
+self.llde.open_url("downoload.ll")
+self.llde.check_security(10)
+self.llde.open_url("maliciouswebsite.com")
+self.llde.check_security(10)
+door = DoorOS
+door.start(1)
+door.run_llde(3)
+print("DoorOS:Chiusura...")
+from flask import Flask, reqest, jsonkfy
+
+app = Flask(__name__)
+apps = []
+
+@.route('/apps', methods=['GET', 'POST'])
+def apps_handler():
+if request.method == 'POST': apps.append([**request.json, 'id': len(apps) + 1]); return jsonify(apps[–1]), 201
+
+@app.route('/apps/\<int:app_id>', methods=['GET'])
+def get_app(app_id):
+return jsonify(next((a for a in apps if a['id'] == app_id), None)) or ('Not found', 404)
+
+if__name__ == '__main__':
+ app.run()
+
+class Impostazioni: import sys
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QListWidget, QStackedWidget,
+    QHBoxLayout, QVBoxLayout, QLabel, QSlider
+)
+from PySide6.QtCore import Qt
+
+
+class SettingsApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Impostazioni")
+        self.resize(950, 550)
+
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.menu = QListWidget()
+        self.menu.addItems(["Sistema", "Schermo", "Rete", "Account"])
+        self.menu.setFixedWidth(240)
+        self.menu.setSpacing(4)
+
+        self.pages = QStackedWidget()
+        self.pages.setStyleSheet("background-color: #f9f9f9;")
+
+        self.pages.addWidget(self.system_page())
+        self.pages.addWidget(self.display_page())
+        self.pages.addWidget(self.network_page())
+        self.pages.addWidget(self.account_page())
+
+        self.menu.currentRowChanged.connect(self.pages.setCurrentIndex)
+        self.menu.setCurrentRow(0)
+
+        main_layout.addWidget(self.menu)
+        main_layout.addWidget(self.pages)
+
+        self.apply_style()
+
+    def apply_style(self):
+        self.setStyleSheet("""
+        QWidget {
+            font-family: "Segoe UI";
+            font-size: 14px;
+        }
+
+        QListWidget {
+            background: #ffffff;
+            border: none;
+            padding: 10px;
+        }
+
+        QListWidget::item {
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        QListWidget::item:selected {
+            background-color: #e6f0ff;
+            color: #000;
+        }
+
+        QListWidget::item:hover {
+            background-color: #f0f0f0;
+        }
+
+        QLabel {
+            color: #202020;
+        }
+
+        QSlider::groove:horizontal {
+            height: 6px;
+            background: #d0d0d0;
+            border-radius: 3px;
+        }
+
+        QSlider::handle:horizontal {
+            width: 16px;
+            height: 16px;
+            background: #0078d7;
+            border-radius: 8px;
+            margin: -5px 0;
+        }
+        """)
+
+    def system_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Sistema")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Versione OS: 0.1 Alpha"))
+        l.addStretch()
+        return w
+
+    def display_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Schermo")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+
+        l.addWidget(QLabel("Luminosità"))
+        slider = QSlider(Qt.Horizontal)
+        slider.setRange(0, 100)
+        slider.setValue(70)
+        l.addWidget(slider)
+
+        l.addStretch()
+        return w
+
+    def network_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Rete")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Wi-Fi: Connesso"))
+        l.addStretch()
+        return w
+
+    def account_page(self):
+        w = QWidget()
+        l = QVBoxLayout(w)
+        title = QLabel("Account")
+        title.setStyleSheet("font-size: 22px; font-weight: 600;")
+        l.addWidget(title)
+        l.addWidget(QLabel("Utente locale"))
+        l.addStretch()
+        return w
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = SettingsApp()
+    window.show()
+    sys.exit(app.exec())
+ 
+class note: watermark_preview_image20250607_1-8f7njk.png
+
+import tkinter as tk
+from tkinter import filedialog, messagebox.showinfo("Fix","Vulnerabilià corretta")
+
+def salva():
+ file_path = filedialog.askopenfilename(defaultextension=".txt")
+if file_path:
+ with open(file_path, 'w') as f:
+  f.write(text_area.get("1.0", tk.END))
+  messagebox.showinfo("Info", "Salvato!")
+
+def apri():
+ file_path = filedialog.askopenfilename()
+ if file_path
+   with open(file_path, 'r') as f:
+    text_area.delete("1.0", tk.END)
+     text_area.insert(tk.END, f.read())
+finestra = tk.TK()
+finestra.title("Note")
+
+text_area = tk.Text(finestra, wrap=tk.WORD)
+text_area.pack(fill=tk.BOTH, expand=True, padx=10 pady=10)
+
+tk.Button(finestra, text="Salva", command=salva).pack(side=tk.LEFT, padx=10)
+tk.Button(finestra, text="Apri", command=apri).pack(side=tk.LEFT,padx=10)
+
+finestra.mainloop() 
+  
+     
+  
+
+import subprocess
+
+def crea_swap(dimensione_gb=109):
+ dimensione_bytes = dimensione_gb * 1024**3
+ nome_file = "swapfile.img"
+ with open(nome_file, "wb") as f:
+   f.seek(dimensione_bytes - 1)
+  f.write(b"/0")
+
+subprocess.run(f"mkswap [nome_file]", shell=True, check=True)
+subprocess.run(f"swapon [nome_file]",shell=True, check=True)
+print("Swap creato e abilitato. Verifica con 'free -h'")
+
+crea_swap()
+
+class doorstored: watermark_preview_image2025607-1-9geynq.png
+from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+apps = [["id": 1, "n": "App", "d": "Desc", "r": 4.5]]
+
+@app.route('/apps')
+def get(): return  jsonify(apps)
+
+@app.route('/dl/<int:i>')
+def dl(i): return f"Downloading" if next((a for a in appsif a['id']==i),None) else "Not found", 404
+@app.route('/add', methods=['POST'])
+def add  apps.append(request.json); return jsonify(request.json), 201
+
+if __name__ == ' __main__': app.run(debug=1) 
+
+import sys, os
+from PyQt5.QtWidget import
+QApplication, QWidget, QPushButton,
+QVBoxLayout, QMessageBox
+
+class ShutdownBtn
+def close_all_windows
+print(" il tuo computer si spegera")
+def disactive_screen
+def if_you_cluc_agnin
+def comparing_logo_of_the_door_laws_file_systemy
+
+
+import subprocess
+import getpass
+
+def crea_utent():
+    username = input("Inserisci il nome utente:")
+    password = getpass.getpass("Inserisci la password:")
+
+try:
+
+subprocess.run(['sudo, 'useradd', '-m', username], check=True)
+subprocess.run(['sudo, 'passwd', '--stdin', username], input=password.encode(),
+print(f"Utente [username] creato con successso.")
+execept subprocess.CalledProcessErorr:
+print("Errore nella creazione dell'utente.")
+
+crea_utente()
+
+import pygame, time
+pygame.init()
+s=pygame.display.set_mode((0,0), pygame.FULLSCREEN)
+I=pygame.image.load("boot_logo.png") 
+s.blit(I, I.get_rect(center=s.get_rect().center))
+pygame.display.update()
+time.spleep(3)
+pygame.quit() 
+print("Door 1.01 security (beta)") 
+
+import pygame,os,time
+if os.path.exists("virus.flag"):
+pygame.init();s=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+i=pygame.image.load("porta_aperta.png");s.blit(i,i.get_rect(center=s.get_rect().center))
+f=pygame.font.SysFont(None,80);t=f.render("ATTENZIONE: IL LUCCHETTO é COMPROMESSO",1,(255,0,0))
+s.blit(t,t.get_rect(center=(s.get_width()//2,.get_height()-100)))
+pygame.display.update();time.spleep(5);pygame.quit
+
+class calculator: watermark_preview_image20250607-1-4cpcyw.png
+
+import tkinter as tk
+
+def press(x):
+ if x=='=' 
+try: ent.insert(tk.END, str(eval(ent.get())))
+except: ent.delete(0,tk.END)
+(roelif x=='C': ent.delete(0,tk.END)
+else: ent.insert(tk.END,x)
+
+root=tk.TK()
+ent=tk.Entry(root,justify='right'); ent.pack(fill='x')
+for b in '789/456*123-0.=+C':
+  tk.Button(root,text=b,command=lambda x=b:press(x)).pack(side='left')
+ root.mainloop()
+
+class E-mail: watermark_previev_image20250606_1_13pywh0.png
+
+import os;from tkinter import messagebox,Tk
+def apri_file(f):
+ d=open(f).read();Tk().withdraw()
+if any(x in d for x in["#VIRUS","MALICIOUS","DROP","<script>"]):os.rename(f,f+".bloccato");messagebox.showwarning(""Bloccato","Malware rilevato")
+if any(x in d for x in["DROP","<script>","eval("]):d=d.replace("<script>","").replace("DROP","--").replace("eval(",#");open(f,"w").write(d);messagebox.showinfo("Fix","Vulnerabilità corretta")
+else:os.systemy(f'"[f]"')
+
+import tkinter as tk
+import webbrowser
+import geocoder
+
+def invia_sos()
+posizione = geocoder.ip("me")
+lat, lon = posizione.latlng if posizione.ok
+messaggio = f"Emergenza! posizione: [lat], [lon]"
+print(messaggio)
+
+webbroewser.open("https://www..emergenza.gov.it")
+
+# GUI
+root =tk.Tk()
+root.title("sistema di emergenza")
+root.geometry("300x100")
+root.attributes('-topmost', True)
+
+sos_button = tk.button(root, text="SOS", command=invia_sos
+sos_button.place(x=5, y=5 width=50, height=30)
+
+root.mainloop()
