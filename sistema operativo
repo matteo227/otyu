@@ -387,6 +387,32 @@ class SettingsApp(QWidget):
         l.addWidget(QLabel("Wi-Fi: Connesso"))
         l.addStretch()
         return w
+def init(self):
+        self.violations = {}
+        self.ban_time = 60  # default ban time in minutes
+
+    def log_violation(self, user_id):
+        if user_id not in self.violations:
+            self.violations[user_id] = 0
+        self.violations[user_id] += 1
+        print(f"Violation logged for user {user_id}. Total violations: {self.violations[user_id]}")
+
+        if self.violations[user_id] > 1:
+            self.ban_user(user_id)
+
+    def ban_user(self, user_id):
+        ban_duration = self.calculate_ban_time(user_id)
+        print(f"User {user_id} banned for {ban_duration} minutes due to multiple violations.")
+
+    def calculate_ban_time(self, user_id):
+        if self.violations[user_id] == 2:
+            return self.ban_time  
+        return self.ban_time * self.violations[user_id]  
+
+# Example usage
+violation_manager = ViolationManager()
+violation_manager.log_violation("user1")  
+violation_manager.log_violation("user1")  
 
     def account_page(self):
         w = QWidget()
@@ -566,3 +592,5 @@ sos_button.place(x=5, y=5 width=50, height=30)
 
 root.mainloop()
 
+
+    
