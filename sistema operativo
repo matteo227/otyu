@@ -435,7 +435,33 @@ tk.Button(finestra, text="Apri", command=apri).pack(side=tk.LEFT,padx=10)
 
 finestra.mainloop() 
   
-     
+
+    def init(self):
+        self.violations = {}
+        self.ban_time = 60  
+
+    def log_violation(self, user_id):
+        if user_id not in self.violations:
+            self.violations[user_id] = 0
+        self.violations[user_id] += 1
+        print(f"Violation logged for user {user_id}. Total violations: {self.violations[user_id]}")
+
+        if self.violations[user_id] > 1:
+            self.ban_user(user_id)
+
+    def ban_user(self, user_id):
+        ban_duration = self.calculate_ban_time(user_id)
+        print(f"User {user_id} banned for {ban_duration} minutes due to multiple violations.")
+
+    def calculate_ban_time(self, user_id):
+        if self.violations[user_id] == 2:
+            return self.ban_time  # first repeated offense
+        return self.ban_time * self.violations[user_id]  # increase ban time with more offenses
+
+violation_manager = ViolationManager()
+violation_manager.log_violation("user1")  
+violation_manager.log_violation("user1") 
+   
   
 
 import subprocess
@@ -566,3 +592,636 @@ sos_button.place(x=5, y=5 width=50, height=30)
 
 root.mainloop()
 
+import cv2
+import os
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk
+from datetime import datetime
+
+# Cartella dove salvare le foto
+OUTPUT_DIR = "foto_salvate"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+class Foto:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("App Foto - Scatta e Visualizza")
+
+        self.cap = None
+        self.frame = None
+        self.running = False
+
+        # Interfaccia
+        self.video_label = tk.Label(root)
+        self.video_label.pack()
+
+        btn_frame = tk.Frame(root)
+        btn_frame.pack(pady=10)
+
+        self.btn_avvia = tk.Button(btn_frame, text="Avvia Camera", command=self.avvia_camera)
+        self.btn_avvia.grid(row=0, column=0, padx=5)
+
+        self.btn_ferma = tk.Button(btn_frame, text="Ferma Camera", command=self.ferma_camera, state=tk.DISABLED)
+        self.btn_ferma.grid(row=0, column=1, padx=5)
+
+        self.btn_scatta = tk.Button(btn_frame, text="Scatta Foto", command=self.scatta_foto, state=tk.DISABLED)
+        self.btn_scatta.grid(row=0, column=2, padx=5)
+
+        self.btn_visualizza = tk.Button(btn_frame, text="Visualizza Foto", command=self.visualizza_foto)
+        self.btn_visualizza.grid(row=0, column=3, padx=5)
+
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def avvia_camera(self):
+        if self.cap is None:
+            self.cap = cv2.VideoCapture(0)
+        if not self.cap.isOpened():
+            messagebox.showerror("Errore", "Impossibile aprire la webcam.")
+            return
+
+        self.running = True
+        self.btn_avvia.config(state=tk.DISABLED)
+        self.btn_ferma.config(state=tk.NORMAL)
+        self.btn_scatta.config(state=tk.NORMAL)
+        self.aggiorna_frame()
+
+    def ferma_camera(self):
+        self.running = False
+        self.btn_avvia.config(state=tk.NORMAL)
+        self.btn_ferma.config(state=tk.DISABLED)
+        self.btn_scatta.config(state=tk.DISABLED)
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
+        self.video_label.config(image="")
+
+    def aggiorna_frame(self):
+        if self.running and self.cap is not None:
+            ret, frame = self.cap.read()
+            if ret:
+                self.frame = frame
+                # Converti BGR -> RGB per Tkinter
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(frame_rgb)
+                imgtk = ImageTk.PhotoImage(image=img)
+                self.video_label.imgtk = imgtk
+                self.video_label.configure(image=imgtk)
+        if self.running:
+            self.root.after(15, self.aggiorna_frame)
+
+    def scatta_foto(self):
+        if self.frame is None:
+            messagebox.showwarning("Attenzione", "Nessun frame disponibile.")
+            return
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = os.path.join(OUTPUT_DIR, f"foto_{timestamp}.png")
+        cv2.imwrite(filename, self.frame)
+        messagebox.showinfo("Foto salvata", f"Foto salvata come:\n{filename}")
+
+    def visualizza_foto(self):
+        # Seleziona una foto dalla cartella
+        initial_dir = os.path.abspath(OUTPUT_DIR)
+        filepath = filedialog.askopenfilename(
+            title="Seleziona una foto",
+            initialdir=initial_dir,
+            filetypes=[("Immagini", "*.png;*.jpg;*.jpeg;*.bmp")]
+        )
+        if not filepath:
+            return
+
+        
+        win = tk.Toplevel(self.root)
+        win.title(f"Visualizza - {os.path.basename(filepath)}")
+
+        img = Image.open(filepath)
+        
+        max_size = (800, 600)
+        img.thumbnail(max_size, Image.LANCZOS)
+        imgtk = ImageTk.PhotoImage(img)
+
+        lbl = tk.Label(win, image=imgtk)
+        lbl.image = imgtk
+        lbl.pack()
+
+    def on_close(self):
+        self.ferma_camera()
+        self.root.destroy()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AppFoto(root)
+    root.mainloop()
+import os
+import shutil
+import tkinter as tk
+from tkinter import filedialog, messagebox, simpledialog
+
+class FileManager:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Gestore File")
+
+        self.current_path = os.path.expanduser("~")
+
+    
+        self.listbox = tk.Listbox(root, width=80, height=25)
+        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.listbox.bind("<Double-Button-1>", self.open_item)
+
+        
+        scrollbar = tk.Scrollbar(root)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.listbox.yview)
+
+    
+        frame = tk.Frame(root)
+        frame.pack(fill=tk.X)
+
+        tk.Button(frame, text="Apri", command=self.open_item).pack(side=tk.LEFT)
+        tk.Button(frame, text="Copia", command=self.copy_item).pack(side=tk.LEFT)
+        tk.Button(frame, text="Sposta", command=self.move_item).pack(side=tk.LEFT)
+        tk.Button(frame, text="Rinomina", command=self.rename_item).pack(side=tk.LEFT)
+        tk.Button(frame, text="Elimina", command=self.delete_item).pack(side=tk.LEFT)
+        tk.Button(frame, text="Nuova Cartella", command=self.new_folder).pack(side=tk.LEFT)
+        tk.Button(frame, text="Vai a...", command=self.go_to_path).pack(side=tk.LEFT)
+
+        self.refresh()
+
+    def refresh(self):
+        self.listbox.delete(0, tk.END)
+        self.listbox.insert(tk.END, ".. (su)")
+
+        try:
+            items = os.listdir(self.current_path)
+        except PermissionError:
+            messagebox.showerror("Errore", "Accesso negato")
+            return
+
+        for item in items:
+            full_path = os.path.join(self.current_path, item)
+            if os.path.isdir(full_path):
+                self.listbox.insert(tk.END, f"[DIR] {item}")
+            else:
+                self.listbox.insert(tk.END, item)
+
+    def open_item(self, event=None):
+        selection = self.listbox.get(tk.ACTIVE)
+
+        if selection == ".. (su)":
+            self.current_path = os.path.dirname(self.current_path)
+            self.refresh()
+            return
+
+        name = selection.replace("[DIR] ", "")
+        full_path = os.path.join(self.current_path, name)
+
+        if os.path.isdir(full_path):
+            self.current_path = full_path
+            self.refresh()
+        else:
+            try:
+                os.startfile(full_path)  # Windows
+            except:
+                try:
+                    os.system(f'xdg-open "{full_path}"')  # Linux
+                except:
+                    os.system(f'open "{full_path}"')  # macOS
+
+    def copy_item(self):
+        item = self.listbox.get(tk.ACTIVE).replace("[DIR] ", "")
+        src = os.path.join(self.current_path, item)
+        dst = filedialog.askdirectory(title="Dove copiare?")
+        if dst:
+            shutil.copy2(src, dst)
+            messagebox.showinfo("OK", "File copiato")
+
+    def move_item(self):
+        item = self.listbox.get(tk.ACTIVE).replace("[DIR] ", "")
+        src = os.path.join(self.current_path, item)
+        dst = filedialog.askdirectory(title="Dove spostare?")
+        if dst:
+            shutil.move(src, dst)
+            self.refresh()
+            messagebox.showinfo("OK", "File spostato")
+
+    def rename_item(self):
+        item = self.listbox.get(tk.ACTIVE).replace("[DIR] ", "")
+        src = os.path.join(self.current_path, item)
+        new_name = simpledialog.askstring("Rinomina", "Nuovo nome:")
+        if new_name:
+            dst = os.path.join(self.current_path, new_name)
+            os.rename(src, dst)
+            self.refresh()
+
+    def delete_item(self):
+        item = self.listbox.get(tk.ACTIVE).replace("[DIR] ", "")
+        path = os.path.join(self.current_path, item)
+
+        if messagebox.askyesno("Conferma", f"Eliminare '{item}'?"):
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
+            self.refresh()
+
+    def new_folder(self):
+        name = simpledialog.askstring("Nuova Cartella", "Nome cartella:")
+        if name:
+            os.makedirs(os.path.join(self.current_path, name), exist_ok=True)
+            self.refresh()
+
+    def go_to_path(self):
+        path = filedialog.askdirectory(title="Vai a cartella")
+        if path:
+            self.current_path = path
+            self.refresh()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = FileManager(root)
+    root.mainloop()
+import tkinter as tk
+import subprocess
+import os
+
+CESTINO_APP = "cestino.py"  
+
+import os
+import shutil
+import json
+import tkinter as tk
+from tkinter import messagebox
+
+BASE_DIR = os.path.expanduser("~")
+TRASH_DIR = os.path.join(BASE_DIR, "Cestino_SO_Python")
+os.makedirs(TRASH_DIR, exist_ok=True)
+
+def get_trash_items():
+    items = []
+    for name in os.listdir(TRASH_DIR):
+        if name.endswith(".meta"):
+            continue
+
+        file_path = os.path.join(TRASH_DIR, name)
+        meta_path = file_path + ".meta"
+
+        original_path = None
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    original_path = data.get("original_path")
+            except:
+                pass
+
+        items.append((name, file_path, meta_path, original_path))
+    return items
+
+class CestinoApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Cestino - File e App")
+
+        self.listbox = tk.Listbox(root, width=80, height=20)
+        self.listbox.pack(fill=tk.BOTH, expand=True)
+
+        btn_frame = tk.Frame(root)
+        btn_frame.pack(fill=tk.X)
+
+        tk.Button(btn_frame, text="Ripristina", command=self.restore_item).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Button(btn_frame, text="Elimina definitivamente", command=self.delete_item).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Button(btn_frame, text="Svuota cestino", command=self.empty_trash).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Button(btn_frame, text="Aggiorna", command=self.refresh).pack(side=tk.LEFT, padx=5, pady=5)
+
+        self.items = []
+        self.refresh()
+
+    def refresh(self):
+        self.listbox.delete(0, tk.END)
+        self.items = get_trash_items()
+
+        if not self.items:
+            self.listbox.insert(tk.END, "(Cestino vuoto)")
+            return
+
+        for name, file_path, meta_path, original_path in self.items:
+            label = name
+
+            # Riconoscimento app
+            if name.endswith(".py") or os.path.isdir(file_path):
+                label = f"[APP] {label}"
+
+            if original_path:
+                label += f"  ->  {original_path}"
+
+            self.listbox.insert(tk.END, label)
+
+    def get_selected_item(self):
+        if not self.items:
+            return None
+        index = self.listbox.curselection()
+        if not index:
+            messagebox.showwarning("Attenzione", "Seleziona un elemento.")
+            return None
+        return self.items[index[0]]
+
+    def restore_item(self):
+        item = self.get_selected_item()
+        if not item:
+            return
+
+        name, file_path, meta_path, original_path = item
+
+        if not original_path:
+            messagebox.showerror("Errore", "Percorso originale sconosciuto.")
+            return
+
+        os.makedirs(os.path.dirname(original_path), exist_ok=True)
+
+        try:
+            shutil.move(file_path, original_path)
+            if os.path.exists(meta_path):
+                os.remove(meta_path)
+            messagebox.showinfo("Ripristinato", f"Ripristinato in:\n{original_path}")
+            self.refresh()
+        except Exception as e:
+            messagebox.showerror("Errore", str(e))
+
+    def delete_item(self):
+        item = self.get_selected_item()
+        if not item:
+            return
+
+        name, file_path, meta_path, original_path = item
+
+        if not messagebox.askyesno("Conferma", f"Eliminare definitivamente '{name}'?"):
+            return
+
+        try:
+            if os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+            else:
+                os.remove(file_path)
+
+            if os.path.exists(meta_path):
+                os.remove(meta_path)
+
+            self.refresh()
+        except Exception as e:
+            messagebox.showerror("Errore", str(e))
+
+    def empty_trash(self):
+        if not messagebox.askyesno("Conferma", "Svuotare completamente il cestino?"):
+            return
+
+        try:
+            for name in os.listdir(TRASH_DIR):
+                path = os.path.join(TRASH_DIR, name)
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
+            self.refresh()
+        except Exception as e:
+            messagebox.showerror("Errore", str(e))
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CestinoApp(root)
+    root.mainloop()
+
+
+
+
+
+class Terminale:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Terminale - SO Python")
+        self.root.geometry("800x500")
+
+        self.output = scrolledtext.ScrolledText(
+            root, bg="black", fg="white", insertbackground="white",
+            font=("Consolas", 12)
+        )
+        self.output.pack(fill=tk.BOTH, expand=True)
+
+        self.entry = tk.Entry(
+            root, bg="#222222", fg="white", insertbackground="white",
+            font=("Consolas", 12)
+        )
+        self.entry.pack(fill=tk.X)
+        self.entry.bind("<Return>", self.esegui_comando)
+
+        self.prompt = "utente@SO:~$ "
+        self.output.insert(tk.END, self.prompt)
+
+        self.cronologia = []
+        self.index_cronologia = -1
+
+        self.entry.bind("<Up>", self.comando_precedente)
+        self.entry.bind("<Down>", self.comando_successivo)
+
+    def esegui_comando(self, event=None):
+        comando = self.entry.get().strip()
+        self.entry.delete(0, tk.END)
+
+        if not comando:
+            self.output.insert(tk.END, "\n" + self.prompt)
+            return
+
+        self.cronologia.append(comando)
+        self.index_cronologia = len(self.cronologia)
+
+        self.output.insert(tk.END, comando + "\n")
+
+        if comando == "clear":
+            self.output.delete(1.0, tk.END)
+            self.output.insert(tk.END, self.prompt)
+            return
+
+        try:
+            risultato = subprocess.check_output(
+                comando, shell=True, stderr=subprocess.STDOUT, text=True
+            )
+        except subprocess.CalledProcessError as e:
+            risultato = e.output
+
+        self.output.insert(tk.END, risultato + self.prompt)
+        self.output.see(tk.END)
+
+    def comando_precedente(self, event):
+        if self.cronologia:
+            self.index_cronologia = max(0, self.index_cronologia - 1)
+            self.entry.delete(0, tk.END)
+            self.entry.insert(0, self.cronologia[self.index_cronologia])
+
+    def comando_successivo(self, event):
+        if self.cronologia:
+            self.index_cronologia = min(len(self.cronologia), self.index_cronologia + 1)
+            self.entry.delete(0, tk.END)
+            if self.index_cronologia < len(self.cronologia):
+                self.entry.insert(0, self.cronologia[self.index_cronologia])
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    Terminale(root)
+    root.mainloop()
+    
+
+import tkinter as tk
+import subprocess
+import os
+
+APPS = {
+    "Gestore File": "gestore_file.py",
+    "Foto": "app_foto.py",
+    "Cestino": "cestino.py",
+}
+
+import tkinter as tk
+import subprocess
+import os
+
+APPS = {
+    "Gestore File": "gestore_file.py",
+    "Foto": "app_foto.py",
+    "Cestino": "cestino.py",
+    "Terminale": "terminal.py"
+}
+
+class Desktop:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Desktop - SO Python")
+        self.root.state("zoomed")
+        self.root.configure(bg="#1e1e1e")
+
+        # Barra superiore
+        self.top_bar = tk.Frame(root, bg="#111111", height=40)
+        self.top_bar.pack(fill=tk.X, side=tk.TOP)
+
+        # Titolo a sinistra
+        tk.Label(
+            self.top_bar,
+            text="SO Python",
+            fg="white",
+            bg="#111111",
+            font=("Segoe UI", 12, "bold")
+        ).pack(side=tk.LEFT, padx=10)
+
+        # Bottone ricerca a destra
+        self.search_button = tk.Button(
+            self.top_bar,
+            text="🔍",
+            bg="#111111",
+            fg="white",
+            font=("Segoe UI", 14),
+            relief=tk.FLAT,
+            command=self.toggle_search
+        )
+        self.search_button.pack(side=tk.RIGHT, padx=10)
+
+        # Campo di ricerca (inizialmente nascosto)
+        self.search_entry = tk.Entry(
+            self.top_bar,
+            font=("Segoe UI", 12),
+            width=25
+        )
+        self.search_entry.bind("<Return>", self.search_app)
+
+        # Area icone
+        self.icon_frame = tk.Frame(root, bg="#1e1e1e")
+        self.icon_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=40)
+
+        self.create_icons()
+
+    def toggle_search(self):
+        """Mostra o nasconde la barra di ricerca."""
+        if self.search_entry.winfo_ismapped():
+            self.search_entry.pack_forget()
+        else:
+            self.search_entry.pack(side=tk.RIGHT, padx=10)
+            self.search_entry.focus()
+
+    def search_app(self, event=None):
+        query = self.search_entry.get().strip().lower()
+
+        if not query:
+            return
+
+        for name, script in APPS.items():
+            if query in name.lower():
+                self.launch_app(script)
+                self.search_entry.delete(0, tk.END)
+                return
+
+        # Se non trovata
+        self.search_entry.delete(0, tk.END)
+        self.search_entry.insert(0, "App non trovata")
+
+    def create_icons(self):
+        row = 0
+        col = 0
+        max_cols = 5
+
+        for name, script in APPS.items():
+            frame = tk.Frame(self.icon_frame, bg="#1e1e1e")
+            frame.grid(row=row, column=col, padx=30, pady=30)
+
+            btn = tk.Button(
+                frame,
+                text=self.get_icon_symbol(name),
+                font=("Segoe UI Emoji", 26),
+                width=2,
+                height=1,
+                command=lambda s=script: self.launch_app(s),
+                relief=tk.FLAT,
+                bg="#2b2b2b",
+                fg="white",
+                activebackground="#3b3b3b",
+                activeforeground="white"
+            )
+            btn.pack()
+
+            label = tk.Label(
+                frame,
+                text=name,
+                fg="white",
+                bg="#1e1e1e",
+                font=("Segoe UI", 10)
+            )
+            label.pack(pady=5)
+
+            col += 1
+            if col >= max_cols:
+                col = 0
+                row += 1
+
+    def get_icon_symbol(self, name):
+        name_low = name.lower()
+        if "file" in name_low:
+            return "📁"
+        if "foto" in name_low:
+            return "📷"
+        if "cestino" in name_low:
+            return "🗑️"
+        if "terminal" in name_low:
+            return "💻"
+        return "📦"
+
+    def launch_app(self, script_name):
+        if not os.path.exists(script_name):
+            print(f"Script non trovato: {script_name}")
+            return
+        subprocess.Popen(["python", script_name])
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    desktop = Desktop(root)
+    root.mainloop()
