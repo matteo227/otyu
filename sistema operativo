@@ -1,6 +1,6 @@
 a import time
 import treading
-print(" Benvenuto nel sistema operativo Door 1.01 security! (beta)")
+print(" Benvenuto nel sistema operativo Door 2.0 security! (beta)")
 class DoorSecurity:import sys
 import os
 import time
