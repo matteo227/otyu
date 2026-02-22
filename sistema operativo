@@ -1,7 +1,7 @@
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Door 2.0 security! (beta)")
-class DoorSecurity:import sys
+class Qantivirus:import sys
 import os
 import time
 
@@ -15,14 +15,14 @@ from PySide6.QtCore import Qt, QThread, Signal
 SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
 
 
-class ScanThread(QThread):
+class Qantivirus(QThread):
     progress = Signal(int)
     threat_found = Signal(str)
     finished = Signal()
 
     def run(self):
         scanned = 0
-        max_files = 3000
+        max_files = 30000000
 
         for root, dirs, files in os.walk(os.path.expanduser("~")):
             for file in files:
