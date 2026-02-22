@@ -4,7 +4,7 @@ class Qantivirus progress = Signal(int):
 
     def run(self):
         scanned = 0
-        max_files = 3000
+        max_files = 30000000
 
         for root, dirs, files in os.walk(os.path.expanduser("~")):
             for file in files:
