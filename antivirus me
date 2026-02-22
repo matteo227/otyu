@@ -1,4 +1,4 @@
-class DoorSecurity progress = Signal(int):
+class Qantivirus progress = Signal(int):
     threat_found = Signal(str)
     finished = Signal()
 
