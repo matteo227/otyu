@@ -40,7 +40,7 @@ from PySide6.QtCore import Qt, QThread, Signal
 SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
 
 
-class ScanThread(QThread):
+class Qantivirus:
     progress = Signal(int)
     threat_found = Signal(str)
     finished = Signal()
