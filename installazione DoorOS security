@@ -3,8 +3,7 @@ import sys
 def confirm_installation():
     print("=" * 50)
     print("ATTENZIONE!")
-    print("Installando questo sistema operativo")
-    print("potresti perdere il sistema attuale.")
+    print("Installando questo sistema operativo.perderai il tuo sistema operativo attuale")                                                                                                                                                         
     print("Assicurati di aver fatto un backup.")
     print("=" * 50)
 
