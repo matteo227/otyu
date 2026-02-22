@@ -1,4 +1,4 @@
-class: DoorSecurity progress = Signal(int)
+class DoorSecurity progress = Signal(int):
     threat_found = Signal(str)
     finished = Signal()
 
