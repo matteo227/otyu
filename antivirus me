@@ -1,20 +1,4 @@
-class: DoorSecurity
-import sys
-import os
-import time
-
-from PySide6.QtWidgets import (
-    QApplication, QWidget, QLabel, QPushButton,
-    QVBoxLayout, QProgressBar, QMessageBox
-)
-from PySide6.QtCore import Qt, QThread, Signal
-
-
-SUSPICIOUS_WORDS = ["virus", "trojan", "malware", "worm"]
-
-
-class ScanThread(QThread):
-    progress = Signal(int)
+class: DoorSecurity progress = Signal(int)
     threat_found = Signal(str)
     finished = Signal()
 
@@ -59,6 +43,37 @@ class AntivirusApp(QWidget):
         self.title = QLabel("Protezione del dispositivo")
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setStyleSheet("font-size: 22px; font-weight: 600;")
+import tkinter as tk
+from tkinter import messagebox
+import random
+import time
+
+def scan_system():
+    scan_button.config(state=tk.DISABLED)
+    result_label.config(text="Scansione in corso...")
+
+    root.update()
+    time.sleep(2)
+
+    threat_found = random.choice([True, False])
+
+    if threat_found:
+        result_label.config(text="Minaccia trovata Risolvi immediatamente.")
+    else:
+        result_label.config(text="Nessuna minaccia trovata.")
+
+    scan_button.config(state=tk.NORMAL)
+
+root = tk.Tk()
+root.title("Scanner di Sicurezza")
+
+scan_button = tk.Button(root, text="Scansiona", command=scan_system)
+scan_button.pack(pady=20)
+
+result_label = tk.Label(root, text="")
+result_label.pack(pady=20)
+
+root.mainloop()
 
         self.status = QLabel("Stato: Protetto")
         self.status.setAlignment(Qt.AlignCenter)
@@ -138,3 +153,20 @@ class AntivirusApp(QWidget):
         else:
             try:
                 os.remove(file_path)
+                self.status.setText("File rimosso")
+            except:
+                self.status.setText("Errore durante la rimozione")
+
+        self.scan_button.setEnabled(True)
+
+    def scan_finished(self):
+        self.status.setText("Scansione completata: nessuna minaccia")
+        self.scan_button.setEnabled(True)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    window = AntivirusApp()
+    window.show()
+    sys.exit(app.exec())
