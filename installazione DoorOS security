@@ -25,8 +25,8 @@ def confirm_installation():
 
 a import time
 import treading
-print(" Benvenuto nel sistema operativo Door 2.0 security! (beta)")
-class DoorSecurity:import sys
+print(" Benvenuto nel sistema operativo Besnich 2.0 security! (beta)")
+class Quantivirus:import sys
 import os
 import time
 
