@@ -1,3 +1,76 @@
+import pygame
+import sys
+import time
+
+pygame.init()
+
+WIDTH, HEIGHT = 800, 500
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Besnich OS")
+
+BLACK = (0, 0, 0)
+GREEN = (0, 200, 0)
+DARK_GREEN = (0, 120, 0)
+WHITE = (255, 255, 255)
+
+font = pygame.font.SysFont("arial", 80, bold=True)
+
+def draw_3d_text(text, x, y):
+    shadow = font.render(text, True, (50, 50, 50))
+    screen.blit(shadow, (x+5, y+5))
+    main_text = font.render(text, True, WHITE)
+    screen.blit(main_text, (x, y))
+
+def draw_shield(x, y):
+    pygame.draw.polygon(screen, GREEN, [
+        (x, y),
+        (x+60, y),
+        (x+60, y+60),
+        (x+30, y+90),
+        (x, y+60)
+    ])
+    
+    pygame.draw.polygon(screen, DARK_GREEN, [
+        (x, y),
+        (x+60, y),
+        (x+60, y+60),
+        (x+30, y+90),
+        (x, y+60)
+    ], 4)
+
+def boot_screen():
+    start_time = time.time()
+    
+    while time.time() - start_time < 3:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        
+        screen.fill(BLACK)
+        draw_3d_text("Besnich", WIDTH//2 - 180, HEIGHT//2 - 80)
+        draw_shield(WIDTH//2 - 30, HEIGHT//2 + 20)
+        pygame.display.update()
+
+def start_os():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        screen.fill((20, 20, 40))
+        small_font = pygame.font.SysFont("arial", 40)
+        text = small_font.render("Benvenuto in Besnich OS", True, WHITE)
+        screen.blit(text, (WIDTH//2 - 200, HEIGHT//2))
+        pygame.display.update()
+    
+    pygame.quit()
+
+boot_screen()
+start_os()
+
+                                                                                                                                                     
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Besnich 2.0 security! (beta)")
