@@ -70,7 +70,75 @@ def start_os():
 boot_screen()
 start_os()
 
-                                                                                                                                                     
+ import pygame
+import hashlib
+import os
+import sys
+import time
+
+SYSTEM_FILE = "system.py"
+HASH_FILE = "secure.hash"
+
+pygame.init()
+WIDTH, HEIGHT = 800, 500
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Besnich Secure Boot")
+
+WHITE = (255, 255, 255)
+RED = (180, 0, 0)
+BLACK = (0, 0, 0)
+GREEN = (0, 200, 0)
+
+font_big = pygame.font.SysFont("arial", 50, bold=True)
+font_small = pygame.font.SysFont("arial", 30)
+
+def calculate_hash(filename):
+    sha256 = hashlib.sha256()
+    with open(filename, "rb") as f:
+        while chunk := f.read(4096):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+def threat_screen():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        screen.fill(RED)
+
+        text1 = font_big.render("MINACCIA RILEVATA", True, WHITE)
+        text2 = font_small.render("Avvio bloccato per sicurezza.", True, WHITE)
+
+        screen.blit(text1, (WIDTH//2 - text1.get_width()//2, HEIGHT//2 - 60))
+        screen.blit(text2, (WIDTH//2 - text2.get_width()//2, HEIGHT//2 + 10))
+
+        pygame.display.update()
+
+def boot_screen():
+    screen.fill(BLACK)
+    text = font_big.render("Secure Boot Attivo", True, GREEN)
+    screen.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - 30))
+    pygame.display.update()
+    time.sleep(2)
+
+def verify_system():
+    if not os.path.exists(SYSTEM_FILE) or not os.path.exists(HASH_FILE):
+        threat_screen()
+
+    current_hash = calculate_hash(SYSTEM_FILE)
+
+    with open(HASH_FILE, "r") as f:
+        stored_hash = f.read().strip()
+
+    if current_hash == stored_hash:
+        boot_screen()
+        os.system(f"python {SYSTEM_FILE}")
+    else:
+        threat_screen()
+
+verify_system()                                                                                                                                                    
 a import time
 import treading
 print(" Benvenuto nel sistema operativo Besnich 2.0 security! (beta)")
